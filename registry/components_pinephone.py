@@ -29,3 +29,9 @@ COMPONENTS = {
     # OURS (R3): the Realtek initialisor = the firmware patch download + the 1.5 Mbaud switch (src/initialisor_rtl)
     "initialisor_rtl": dict(mmp=os.path.join(OS_ROOT, "src/initialisor_rtl/group/initialisor_rtl.mmp")),
 }
+
+# core components that get this board's data (core registry: EXTEND)
+EXTEND = {
+    # the download app's device identity (board + architecture): it shows only what fits this board
+    "pheget": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pinephone.txt"]),
+}
