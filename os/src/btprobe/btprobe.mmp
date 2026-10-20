@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // btprobe.mmp -- OURS (Bluetooth rung R1): the RTL8723CS H5 link-establishment probe over the UART1 serial PDD
 TARGET			btprobe.exe
 TARGETTYPE		exe

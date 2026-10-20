@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // hctlh5main.cpp -- OURS (Bluetooth rung R2): the ECOM implementation table of hctl_h5.dll
 /**
  @file

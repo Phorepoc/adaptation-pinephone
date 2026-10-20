@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // senstest.cpp -- OURS (2026-10-10, PinePhone sensors rung S2): does the 2010 sensor server see our SSY (ssya64) and
 // its LDD (Sensors.A64)? Through the public client API (sensrvclient): find the accelerometer XYZ channels, open the
 // first, listen (1 item at a time) and log 20 samples in the device frame; then find the orientation channel (the RCL_3

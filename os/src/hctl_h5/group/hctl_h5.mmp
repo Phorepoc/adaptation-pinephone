@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // hctl_h5.mmp -- OURS (Bluetooth rung R2, 2026-10-10): the H5 (Three-wire UART) HCTL plug-in for the PinePhone's
 // RTL8723CS on UART1. Forked from the 2010 hctl_bcsp (EPL v1.0); the shape of hctl_bcsp.mmp.
 /**

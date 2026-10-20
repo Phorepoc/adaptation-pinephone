@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // phedrives.cpp -- OURS: drive report for PhoneLab ("PH: drives" lines, forwarded by the kernel seam).
 // For each mounted drive: media type, file system name, size and free space (MB). Then on C: and E: a 4 MB file is
 // written, read back and compared, timed, and deleted.

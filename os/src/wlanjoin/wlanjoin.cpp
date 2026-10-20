@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // wlanjoin.cpp -- OURS (2026-10-10, PinePhone WiFi W4): does the 2010 stack JOIN a network through our WHA PDD?
 //   1. the WLAN IAP in CommsDat, the way the S60 WLAN connection-method plug-in (cmpluginwlan) and the WPA settings
 //      library write it: a LANService record (DHCP via NetCfgExtnDhcp), a WLANServiceTable record (ServiceID -> the

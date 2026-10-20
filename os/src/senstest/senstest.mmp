@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // senstest.mmp -- OURS (PinePhone sensors rung S2): a sensor-server client -- the accelerometer XYZ channel, then the
 // orientation channel; SSM_TEST=senstest stages it as ssmtest.exe
 TARGET			senstest.exe

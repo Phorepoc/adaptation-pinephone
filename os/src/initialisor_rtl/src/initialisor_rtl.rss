@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // initialisor_rtl.rss -- OURS (Bluetooth rung R3): the ECOM registration of the Realtek controller initialisor.
 // corehci_symbian.ini [Plugins] initialisation_uid names the implementation UID below.
 /**

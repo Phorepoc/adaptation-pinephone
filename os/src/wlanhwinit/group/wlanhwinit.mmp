@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // wlanhwinit.mmp -- OURS (2026-10-10, PinePhone WiFi W3): the WLAN hardware-init DLL (the same exports as the 2010
 // adapt stub oss.FCL.sf.adapt.stubs/wlanhwinit_stub), with the real MAC address: the chip's efuse through the kernel
 // (a64_glue.cpp DA64PowerHal function 0x574C). The stub's 00:E0:DE:AD:BE:EF makes wlmserver refuse to start.

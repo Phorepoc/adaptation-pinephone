@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // initialisor_rtl_main.cpp -- OURS (Bluetooth rung R3): the ECOM implementation table of initialisor_rtl.dll
 /**
  @file

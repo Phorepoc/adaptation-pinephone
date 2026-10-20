@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // hctl_h5.rss -- OURS (Bluetooth rung R2): the ECOM registration of the H5 (Three-wire UART) HCTL plug-in.
 // corehci_symbian.ini [Plugins] hctl_uid names the implementation UID below.
 /**

@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // btpower.cpp -- OURS (2026-10-10, Bluetooth rung R2): does the 2010 Bluetooth stack come up on the PinePhone's
 // RTL8723CS over our H5 HCTL? RBTPowerControl::Open starts the stack (RSocketServ::StartProtocol of btlinkmanager
 // inside c32exe's ESock_Bt worker -> bt_v2.prt -> corehci_symbian -> hctl_h5 + initialisor_symbian), the stack then

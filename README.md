@@ -21,4 +21,6 @@ licence next to it (`LICENCE.rtlwifi_firmware.txt`).
 
 ## Licence
 
-Eclipse Public License 1.0 (see `LICENSE`), except the firmware above.
+Eclipse Public License 1.0 (see `LICENSE`), copyright The Phorepoc Authors (`AUTHORS`, `NOTICE`), except the firmware above.
+
+Contributions are welcome under the same terms: add yourself to `AUTHORS`.

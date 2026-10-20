@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // wlanhwinit.cpp -- OURS (2026-10-10, PinePhone WiFi W3): CWlanHwInit, the WLAN hardware-initialisation data the
 // engine (wlmserver) asks for before it loads the drivers. Shape = the 2010 adapt stub (wlanhwinit_stub); the one
 // real answer is the MAC address: the RTL8723CS efuse, read by the kernel's rtw88 probe at boot and handed out by the

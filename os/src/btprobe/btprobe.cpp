@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // btprobe.cpp -- OURS (2026-10-09, Bluetooth rung R1): does the RTL8723CS answer on UART1? Opens the serial port
 // (RBusDevComm unit 1 = the "Comm.A64" PDD) at 115200 8E1 with a 0xC0 terminator, powers the chip through the port's
 // DTR convention (enable PL4 + device-wake PH6; Linux hci_h5 timing: off 100 ms, on 500 ms), then runs the H5

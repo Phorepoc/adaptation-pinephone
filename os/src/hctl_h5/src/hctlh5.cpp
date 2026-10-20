@@ -1,3 +1,7 @@
+// Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // hctlh5.cpp -- OURS (Bluetooth rung R2, 2026-10-10): the H5 HCTL, forked from the 2010 BCSP HCTL (Nokia, EPL v1.0;
 // hctlbcsp.cpp). See hctlh5.h for what differs.
 /**

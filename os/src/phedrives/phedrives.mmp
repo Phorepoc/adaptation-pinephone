@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // phedrives.mmp -- OURS (PinePhone, the E: drive work 2026-10-15): every mounted drive's volume info (size, free, file
 // system) and a write / read-back / delete round trip on C: and E:; SSM_TEST=phedrives stages it as ssmtest.exe
 TARGET			phedrives.exe

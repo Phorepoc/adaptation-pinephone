@@ -1,3 +1,6 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // wlantest.cpp -- OURS (2026-10-10, PinePhone WiFi W3): does the 2010 WLAN stack see networks through our WHA PDD?
 // Through the public management client API (CWlanMgmtClient, the wlanmgmtimpl ECOM plug-in -> RWLMServer ->
 // wlmserver -> wlanldd/the UMAC -> wlan.phys -> the rtw88 chip core): a broadcast scan every round, the networks

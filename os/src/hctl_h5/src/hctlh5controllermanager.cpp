@@ -1,3 +1,7 @@
+// Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-1.0
+
 // hctlh5controllermanager.cpp -- OURS (Bluetooth rung R2, 2026-10-10): see hctlh5controllermanager.h. Forked from
 // the 2010 BCSP controller manager (Nokia, EPL v1.0); the state/task bookkeeping and the asynchronous completion
 // callbacks are BCSP's, the BCCMD commands are replaced by the enable-pin pulse.
