@@ -14,6 +14,10 @@ registry/components_pinephone.py  this adaptation's components (merged into core
 
 `os/` is laid over [core](https://github.com/Phorepoc/core)'s `os/` at build time, so paths match core's.
 
+**Status:** the components here build one by one with the pdk (`ph component build -b pinephone -arch arm <name>`). The
+PinePhone **image** (the ARM kernel and ROM link, the AArch64 boot shim, the U-Boot packaging) is not in the public
+pdk yet; it is being ported. Until then, the PC board is the one that builds a complete image.
+
 ## Firmware
 
 `os/src/phorepoc-arm/board/{bt,wlan}/fw/` holds Realtek firmware from linux-firmware, redistributable under the
