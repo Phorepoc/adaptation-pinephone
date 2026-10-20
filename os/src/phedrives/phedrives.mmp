@@ -1,0 +1,12 @@
+// phedrives.mmp -- OURS (PinePhone, the E: drive work 2026-10-15): every mounted drive's volume info (size, free, file
+// system) and a write / read-back / delete round trip on C: and E:; SSM_TEST=phedrives stages it as ssmtest.exe
+TARGET			phedrives.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE70157B3
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			phedrives.cpp
+LIBRARY			euser.lib efsrv.lib

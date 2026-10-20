@@ -1,0 +1,93 @@
+<!--
+........................................................................................................................
+OURS (PinePhone sensors S2b, 2026-10-10): the RCL_3 autorotateui_activate rule (ApplicationStateSourcePlugIn/data/
+autorotateui_activate.xml) WITHOUT its "Device: DeviceLock.Status = EDeviceLockOff" conditions. That context is the
+P&S key 0x101F8767/0x501 published by the lock application (lockapp.exe, SSM's noncritical_ext list), which this ROM
+does not run yet: the key reads 0 = EAutolockStatusUninitialized and the stock rule never activates the orientation
+channel. Put the stock rule back once lockapp is in the ROM (docs/phorepoc/pinephone-port.md, sensors S2b).
+Description:
+    This rule script defines when to activate and deactivate orientation channel.
+Feature:
+    autorotateui
+Dependencies:
+    autorotateui_rotate.rul
+........................................................................................................................
+-->
+<script xmlns="http://www.nokia.com/ns/cep/script/1.0/"
+xmlns:cep="http://www.nokia.com/ns/cep/1.0/">
+<!--
+........................................................................................................................
+Description:
+    Activate orientation channel from sensor source.
+........................................................................................................................
+-->
+    <if>
+        <and>
+            <!-- Sensor setting is enabled -->
+            <equals>
+                <contextRef source='Sensor' type='Setting.Active' value='On'/>
+            </equals>
+            <!-- Turning interaction is enabled -->
+            <equals>
+                <contextRef source='Sensor' type='Setting.TurningInteraction.AutoRotation' value='On'/>
+            </equals>
+            <!-- Lights are on -->
+            <equals>
+                <contextRef source='Device' type='Display.Status.Light' value='On'/>
+            </equals>
+            <!-- Key lock is disabled -->
+            <equals>
+                <contextRef source='System' type='Keyguard.Status' value='EKeyguardNotActive'/>
+            </equals>
+        </and>
+        <actions>
+            <!-- Activate orientation channel (0x01) from sensor source (0x10282DF0) -->
+            <sourceCommand uid='0x10282DF0'>
+                <sensorCommand channelId='0x01' id='activate' featureId='fea.autorotateui'/>
+            </sourceCommand>
+           <!-- publish context telling that rotation is now enabled -->
+            <publishContext define='true'>
+                <contextRef source='Device' type='Orientation.Active' value='true'/>
+            </publishContext>
+        </actions>
+    </if>
+
+<!--
+........................................................................................................................
+Description:
+    Deactivate orientation channel from sensor source.
+........................................................................................................................
+-->
+    <elseIf>
+        <or>
+            <!-- Sensor setting is disabled -->
+            <equals>
+                <contextRef source='Sensor' type='Setting.Active' value='Off'/>
+            </equals>
+            <!-- Turning interaction is disabled -->
+            <equals>
+                <contextRef source='Sensor' type='Setting.TurningInteraction.AutoRotation' value='Off'/>
+            </equals>
+            <!-- Lights are off -->
+            <equals>
+                <contextRef source='Device' type='Display.Status.Light' value='Off'/>
+            </equals>
+            <!-- Key lock is enabled -->
+            <notEqual>
+                <contextRef source='System' type='Keyguard.Status' value='EKeyguardNotActive'/>
+            </notEqual>
+        </or>
+        <actions>
+            <!-- Deactivate orientation channel (0x01) from sensor source (0x10282DF0) -->
+            <sourceCommand uid='0x10282DF0'>
+                <sensorCommand channelId='0x01' id='deactivate' featureId='fea.autorotateui'/>
+            </sourceCommand>
+
+            <!-- publish context telling that rotation is now disabled -->
+            <publishContext define='true'>
+                <contextRef source='Device' type='Orientation.Active' value='false'/>
+            </publishContext>
+        </actions>
+    </elseIf>
+
+</script>

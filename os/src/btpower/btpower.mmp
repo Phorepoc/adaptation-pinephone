@@ -1,0 +1,11 @@
+// btpower.mmp -- OURS (Bluetooth rung R2): starts the 2010 Bluetooth stack on the PinePhone and reads the local address
+TARGET			btpower.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE701571C
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			btpower.cpp
+LIBRARY			euser.lib esock.lib bluetooth.lib btpowercontrol.lib

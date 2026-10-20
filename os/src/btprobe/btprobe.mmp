@@ -1,0 +1,11 @@
+// btprobe.mmp -- OURS (Bluetooth rung R1): the RTL8723CS H5 link-establishment probe over the UART1 serial PDD
+TARGET			btprobe.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE701571B
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			btprobe.cpp
+LIBRARY			euser.lib

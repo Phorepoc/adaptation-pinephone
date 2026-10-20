@@ -1,0 +1,12 @@
+// phemodemtest.mmp -- OURS (modem rung M1, docs/phorepoc/telephony-plan.md): powers the EG25-G through the UART3
+// serial PDD (RBusDevComm unit 3, MODEM=1 kernel), runs a few AT commands, powers it down; "PH: modem" lines
+TARGET			phemodemtest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE70157F6
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			phemodemtest.cpp
+LIBRARY			euser.lib

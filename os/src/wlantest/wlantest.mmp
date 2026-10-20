@@ -1,0 +1,14 @@
+// wlantest.mmp -- OURS (PinePhone WiFi W3): a WLAN management client -- asks wlmserver for a scan and lists the
+// networks it found (the whole 2010 stack down to our WHA PDD runs under it); SSM_TEST=wlantest stages it as ssmtest.exe
+TARGET			wlantest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7015737
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+// the WLAN management client API (RCL_3 wlan_plat, not exported to our .epoc32)
+USERINCLUDE		../../baseline/symbian-rcl3/oss.FCL.sf.os.wlan/wlan_plat/wlan_management_api/inc
+SOURCEPATH		.
+SOURCE			wlantest.cpp
+LIBRARY			euser.lib ecom.lib

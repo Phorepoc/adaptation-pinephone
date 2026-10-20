@@ -1,0 +1,47 @@
+// hctl_h5.mmp -- OURS (Bluetooth rung R2, 2026-10-10): the H5 (Three-wire UART) HCTL plug-in for the PinePhone's
+// RTL8723CS on UART1. Forked from the 2010 hctl_bcsp (EPL v1.0); the shape of hctl_bcsp.mmp.
+/**
+ @file
+ @internalComponent
+*/
+
+TARGET hctl_h5.dll
+TARGETTYPE PLUGIN
+// UID2 = 0x10009d8d for ECOM plugins; UID3 = the DLL UID (see hctl_h5.rss)
+UID 0x10009d8d 0xE7015730
+VENDORID 0x70000001
+CAPABILITY CommDD PowerMgmt ReadDeviceData WriteDeviceData TrustedUI ProtServ NetworkControl NetworkServices LocalServices ReadUserData WriteUserData
+
+SOURCEPATH ../src
+
+RESOURCE hctl_h5.rss
+
+NOEXPORTLIBRARY
+
+SOURCE hctlh5main.cpp
+SOURCE hctlh5frame.cpp
+SOURCE hctlh5.cpp
+SOURCE hctlh5receiver.cpp
+SOURCE hctlh5sender.cpp
+SOURCE linkestablishment.cpp
+SOURCE hctlh5linkstate.cpp
+SOURCE tlinkstates.cpp
+SOURCE hctlh5sequencer.cpp
+SOURCE hctlh5FrameQueue.cpp
+SOURCE hctlh5controllermanager.cpp
+
+USERINCLUDE ../inc
+OS_LAYER_SYSTEMINCLUDE_SYMBIAN
+
+LIBRARY esock.lib
+LIBRARY euser.lib
+LIBRARY hctl_base.lib
+LIBRARY hciutil.lib		// OURS: the [hctl] crc ini option (BCSP read nothing of its own)
+LIBRARY btlogger.lib
+
+MACRO ENABLE_HCI_FRAME_LOGGING // Enable the HCI frame logging (BtSnoop)
+MACRO __FLOG_NO_UDEB // Disable standard logging
+
+UNPAGED
+
+SMPSAFE

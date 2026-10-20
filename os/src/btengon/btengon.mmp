@@ -1,0 +1,11 @@
+// btengon.mmp -- OURS (Bluetooth rung R4): switches Bluetooth on through the S60 engine (CBTEngSettings)
+TARGET			btengon.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE701571D
+CAPABILITY		All -TCB
+VENDORID		0
+
+MW_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			btengon.cpp
+LIBRARY			euser.lib btengsettings.lib

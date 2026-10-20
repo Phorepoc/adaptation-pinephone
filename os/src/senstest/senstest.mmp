@@ -1,0 +1,16 @@
+// senstest.mmp -- OURS (PinePhone sensors rung S2): a sensor-server client -- the accelerometer XYZ channel, then the
+// orientation channel; SSM_TEST=senstest stages it as ssmtest.exe
+TARGET			senstest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7015736
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+// the Context Framework client API (RCL_3 appsupport_plat, not exported to our .epoc32)
+USERINCLUDE		../../baseline/symbian-rcl3/oss.FCL.sf.mw.appsupport/appsupport_plat/context_framework_client_api/inc
+USERINCLUDE		../../baseline/symbian-rcl3/oss.FCL.sf.mw.appsupport/appsupport_plat/context_framework_listener_api/inc
+USERINCLUDE		../../baseline/symbian-rcl3/oss.FCL.sf.mw.appsupport/appsupport_plat/context_framework_services_api/inc
+SOURCEPATH		.
+SOURCE			senstest.cpp
+LIBRARY			euser.lib sensrvclient.lib sensrvutil.lib centralrepository.lib cfclient.lib cfservices.lib

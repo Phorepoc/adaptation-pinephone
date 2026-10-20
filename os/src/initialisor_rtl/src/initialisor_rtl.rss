@@ -1,0 +1,32 @@
+// initialisor_rtl.rss -- OURS (Bluetooth rung R3): the ECOM registration of the Realtek controller initialisor.
+// corehci_symbian.ini [Plugins] initialisation_uid names the implementation UID below.
+/**
+ @file
+ @internalComponent
+*/
+
+#include <ecom/registryinfo.rh>
+#include <bluetooth/hci/initialisorbase.hrh>
+
+RESOURCE REGISTRY_INFO theInfo
+	{
+	dll_uid = 0xE7015732;
+	interfaces =
+		{
+		INTERFACE_INFO
+			{
+			interface_uid = KControllerInitialisationEcomInterfaceUid;
+			implementations =
+				{
+				IMPLEMENTATION_INFO
+					{
+					implementation_uid = 0xE7015733;
+					version_no = 1;
+					display_name = "rtl8723cs_initialisor";
+					default_data = "";
+					opaque_data = "";
+					}
+				};
+			}
+		};
+	}

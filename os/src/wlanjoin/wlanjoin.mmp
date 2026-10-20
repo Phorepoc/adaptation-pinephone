@@ -1,0 +1,16 @@
+// wlanjoin.mmp -- OURS (PinePhone WiFi W4): joins a WLAN through the whole 2010 stack -- a WLAN IAP written into
+// CommsDat (LANService + WLANServiceTable + IAP on the WLANBearer), RConnection::Start on it (wlanagt -> wlmserver ->
+// the UMAC association -> wlannif -> DHCP), then DNS + an HTTP GET as nettest does; SSM_TEST=wlanjoin stages it
+TARGET			wlanjoin.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7015738
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+MW_LAYER_SYSTEMINCLUDE
+// the WLAN CommsDat column names (RCL_3 ipcm_plat, not exported to our .epoc32)
+USERINCLUDE		../../baseline/symbian-rcl3/oss.FCL.sf.mw.ipconnmgmt/ipcm_plat/commsdat_wlan_api/inc
+SOURCEPATH		.
+SOURCE			wlanjoin.cpp
+LIBRARY			euser.lib efsrv.lib esock.lib insock.lib commdb.lib btengsettings.lib

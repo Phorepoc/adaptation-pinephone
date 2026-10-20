@@ -1,0 +1,32 @@
+// hctl_h5.rss -- OURS (Bluetooth rung R2): the ECOM registration of the H5 (Three-wire UART) HCTL plug-in.
+// corehci_symbian.ini [Plugins] hctl_uid names the implementation UID below.
+/**
+ @file
+ @internalComponent
+*/
+
+#include <ecom/registryinfo.rh>
+#include <bluetooth/hci/hctlbase.hrh>
+
+RESOURCE REGISTRY_INFO theInfo
+	{
+	dll_uid = 0xE7015730;
+	interfaces =
+		{
+		INTERFACE_INFO
+			{
+			interface_uid = KHCTLBaseEcomInterfaceUid;
+			implementations =
+				{
+				IMPLEMENTATION_INFO
+					{
+					implementation_uid = 0xE7015731;
+					version_no = 1;
+					display_name = "H5";
+					default_data = "";
+					opaque_data = "";
+					}
+				};
+			}
+		};
+	}

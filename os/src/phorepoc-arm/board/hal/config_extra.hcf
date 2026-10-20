@@ -1,0 +1,5 @@
+EDisplayMemoryHandle=GetDisplayMemoryHandle
+// EFastCounterFrequency: the real User::FastCounter rate (NKern::FastCounterFrequency = CNTFRQ, 24 MHz on the A64),
+// as the 2010 NaviEngine SMP BSP does (ne1_tb/hal/config.hcf). Syborg's "0" = values.hda's static 1000000 was wrong
+// for our generic-timer FastCounter (2026-10-17, pinephone-port.md "CPU-speed probe").
+EFastCounterFrequency=ProcessFastCounterFrequency

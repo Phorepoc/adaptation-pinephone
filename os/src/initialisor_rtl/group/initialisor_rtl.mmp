@@ -1,0 +1,35 @@
+// initialisor_rtl.mmp -- OURS (Bluetooth rung R3, 2026-10-10): the Realtek RTL8723CS controller-initialisation
+// plug-in (firmware patch download + baud switch). Shape of the 2010 initialisor_ti.mmp (EPL v1.0).
+/**
+ @file
+ @internalComponent
+*/
+
+TARGET initialisor_rtl.dll
+TARGETTYPE PLUGIN
+UID 0x10009d8d 0xE7015732
+VENDORID 0x70000001
+CAPABILITY CommDD PowerMgmt ReadDeviceData WriteDeviceData TrustedUI ProtServ NetworkControl NetworkServices LocalServices ReadUserData WriteUserData
+
+SOURCEPATH ../src
+
+RESOURCE initialisor_rtl.rss
+
+SOURCE initialisor_rtl_main.cpp
+SOURCE rtlinitialisor.cpp
+
+USERINCLUDE ../inc
+USERINCLUDE ../../hctl_h5/inc		// hctlconfiginterface.h (the TI-defined HCTL baud-rate interface)
+OS_LAYER_SYSTEMINCLUDE_SYMBIAN
+
+LIBRARY euser.lib
+LIBRARY esock.lib
+LIBRARY efsrv.lib
+LIBRARY initialisor_base.lib
+LIBRARY commandsevents.lib
+LIBRARY hciutil.lib
+LIBRARY btlogger.lib
+
+UNPAGED
+
+SMPSAFE
