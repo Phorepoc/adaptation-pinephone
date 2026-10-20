@@ -6,7 +6,7 @@
 // Vol 4 Part D) HCTL. Forked from the 2010 BCSP HCTL's hctlbcspconsts.h (Nokia, EPL v1.0): the header bits, the
 // checksum, the CRC and the SLIP framing are identical between BCSP and H5; what changes is the packet-type
 // numbering (BCSP channels -> H5 packet types) and the link-establishment messages (4-byte magic words -> the
-// 2-byte SYNC/CONFIG messages with a configuration field). docs/phorepoc/research/bluetooth-linux.md 2.
+// 2-byte SYNC/CONFIG messages with a configuration field).
 /**
  @file
  @internalComponent

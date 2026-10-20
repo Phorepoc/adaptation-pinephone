@@ -8,7 +8,7 @@
 // packet types (hctlh5consts.h), the 2-byte link messages with a configuration field (linkestablishment.cpp), the
 // WAKEUP/WOKEN exchange, GPIO power control through the port's DTR line instead of CSR BCCMDs
 // (hctlh5controllermanager.cpp), and the MHctlConfigInterface baud-rate switch the initialisor uses after the
-// firmware download. docs/phorepoc/research/bluetooth-linux.md 2, bluetooth-2010.md b.3.
+// firmware download.
 /**
  @file
  @internalComponent

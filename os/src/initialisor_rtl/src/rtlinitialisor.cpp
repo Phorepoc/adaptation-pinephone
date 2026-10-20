@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: EPL-1.0
 
 // rtlinitialisor.cpp -- OURS (Bluetooth rung R3, 2026-10-10): see rtlinitialisor.h. Skeleton from the TI initialisor
-// (Nokia, EPL v1.0); the Realtek protocol from Linux btrtl.c / hci_h5.c as documented in
-// docs/phorepoc/research/bluetooth-linux.md (1.2 vendor commands, 1.3 patch + config download, 3 the file facts).
+// (Nokia, EPL v1.0); the Realtek protocol from Linux btrtl.c / hci_h5.c:
+// the vendor commands, the patch + config download, the file layout.
 /**
  @file
  @internalComponent

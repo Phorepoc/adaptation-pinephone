@@ -4,7 +4,7 @@ OURS (PinePhone sensors S2b, 2026-10-10): the RCL_3 autorotateui_activate rule (
 autorotateui_activate.xml) WITHOUT its "Device: DeviceLock.Status = EDeviceLockOff" conditions. That context is the
 P&S key 0x101F8767/0x501 published by the lock application (lockapp.exe, SSM's noncritical_ext list), which this ROM
 does not run yet: the key reads 0 = EAutolockStatusUninitialized and the stock rule never activates the orientation
-channel. Put the stock rule back once lockapp is in the ROM (docs/phorepoc/pinephone-port.md, sensors S2b).
+channel. Put the stock rule back once lockapp is in the ROM (sensors S2b).
 Description:
     This rule script defines when to activate and deactivate orientation channel.
 Feature:

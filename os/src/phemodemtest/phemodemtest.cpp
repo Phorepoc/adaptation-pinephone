@@ -1,7 +1,7 @@
 // Copyright The Phorepoc Authors
 // SPDX-License-Identifier: EPL-1.0
 
-// phemodemtest.cpp -- OURS (2026-10-17, modem rung M1, docs/phorepoc/telephony-plan.md): is the EG25-G alive on
+// phemodemtest.cpp -- OURS (2026-10-17, modem rung M1): is the EG25-G alive on
 // UART3? Opens RBusDevComm unit 3 (the "Comm.A64" PDD built with MODEM=1: opening it runs the kernel's bounded power-up
 // sequence, the modem's STATUS pin reads as KSignalDSR), waits for STATUS, probes "AT" until OK, runs ATI, AT+CPIN?,
 // AT+CSQ, AT+COPS?, then AT+QPOWD=1 and waits for STATUS to drop before closing (the close cuts VBAT only then).

@@ -1,7 +1,7 @@
 // Copyright The Phorepoc Authors
 // SPDX-License-Identifier: EPL-1.0
 
-// phemodemtest.mmp -- OURS (modem rung M1, docs/phorepoc/telephony-plan.md): powers the EG25-G through the UART3
+// phemodemtest.mmp -- OURS (modem rung M1): powers the EG25-G through the UART3
 // serial PDD (RBusDevComm unit 3, MODEM=1 kernel), runs a few AT commands, powers it down; "PH: modem" lines
 TARGET			phemodemtest.exe
 TARGETTYPE		exe

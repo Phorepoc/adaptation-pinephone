@@ -10,4 +10,4 @@ Rules (the same as `../../bt/fw/`): ship as is, never disassemble or modify, **n
 
 Consumers: the kernel's chip core reads it straight out of the XIP ROM (`src/phorepoc-arm/a64/wlan/a64wlan.cpp`) and
 hands it to the vendored rtw88 (`request_firmware` in `shim_rt.cpp`); the OURS `wlanhwinit` will load it from user
-side through the WHA front later (docs/phorepoc/pinephone-port.md "WiFi: the chip core").
+side through the WHA front later.

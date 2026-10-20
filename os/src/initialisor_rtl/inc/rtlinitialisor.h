@@ -5,7 +5,7 @@
 // of the 2010 HCIv2 framework. Shape of the TI initialisor (bthci/hci2implementations/initialisors/ti, Nokia, EPL
 // v1.0): an ECOM plug-in the Symbian CoreHCI loads from corehci_symbian.ini, driven by the stack through
 // MControllerInitialisationInterface, sending vendor commands through the HCI command queue in its pre-reset phase.
-// What it does (the Linux btrtl order, docs/phorepoc/research/bluetooth-linux.md 1): Read_Local_Version (expect LMP
+// What it does (the Linux btrtl order): Read_Local_Version (expect LMP
 // subversion 0x8703 = an unpatched 8723CS), vendor 0xfc61 chip type, 0xfc6d ROM version, pick the patch whose
 // chip id = ROM version + 1 from z:\private\101f7989\bluetooth\rtl8723cs_xx_fw.bin, append the config file, switch
 // the UART to the config's baud rate (vendor 0xfc17 + the HCTL's MhciUpdateBaudRate), download the image in 252-byte
