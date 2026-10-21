@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // wlanhwinit.cpp -- OURS (2026-10-10, PinePhone WiFi W3): CWlanHwInit, the WLAN hardware-initialisation data the
 // engine (wlmserver) asks for before it loads the drivers. Shape = the 2010 adapt stub (wlanhwinit_stub); the one

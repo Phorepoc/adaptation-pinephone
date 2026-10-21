@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // btprobe.cpp -- OURS (2026-10-09, Bluetooth rung R1): does the RTL8723CS answer on UART1? Opens the serial port
 // (RBusDevComm unit 1 = the "Comm.A64" PDD) at 115200 8E1 with a 0xC0 terminator, powers the chip through the port's

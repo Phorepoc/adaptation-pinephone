@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // initialisor_rtl.mmp -- OURS (Bluetooth rung R3, 2026-10-10): the Realtek RTL8723CS controller-initialisation
 // plug-in (firmware patch download + baud switch). Shape of the 2010 initialisor_ti.mmp (EPL v1.0).

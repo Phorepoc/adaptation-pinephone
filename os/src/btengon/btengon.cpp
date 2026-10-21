@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // btengon.cpp -- OURS (2026-10-10, Bluetooth rung R4): the S60 way of switching Bluetooth on, as BtUi / the toggle do:
 // CBTEngSettings::SetPowerState(EBTPowerOn) -> btengsrv.exe (started on demand) -> RBTPowerControl -> the stack

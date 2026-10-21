@@ -1,5 +1,5 @@
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 
 """mkbootscr.py -- write a U-Boot legacy script image (boot.scr) from a text script, like
 `mkimage -A arm -O linux -T script -C none -d boot.cmd boot.scr`, without needing u-boot-tools.

@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // wlanhwinit.mmp -- OURS (2026-10-10, PinePhone WiFi W3): the WLAN hardware-init DLL (the same exports as the 2010
 // adapt stub oss.FCL.sf.adapt.stubs/wlanhwinit_stub), with the real MAC address: the chip's efuse through the kernel

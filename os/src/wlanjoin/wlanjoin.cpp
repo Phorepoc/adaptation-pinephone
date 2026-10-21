@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+// SPDX-License-Identifier: Apache-2.0
 
 // wlanjoin.cpp -- OURS (2026-10-10, PinePhone WiFi W4): does the 2010 stack JOIN a network through our WHA PDD?
 //   1. the WLAN IAP in CommsDat, the way the S60 WLAN connection-method plug-in (cmpluginwlan) and the WPA settings

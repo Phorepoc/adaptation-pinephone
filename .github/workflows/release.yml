@@ -1,5 +1,5 @@
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 
 # release.yml -- the PinePhone image: a whole SD-card image (.img.xz) to write with balenaEtcher, built by the pdk's
 # reusable workflow from the commits board.lock pins. A tag v* publishes it as a draft release of this repository
