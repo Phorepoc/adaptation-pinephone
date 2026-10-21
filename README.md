@@ -25,6 +25,6 @@ licence next to it (`LICENCE.rtlwifi_firmware.txt`).
 
 ## Licence
 
-Eclipse Public License 1.0 (see `LICENSE`), copyright The Phorepoc Authors (`AUTHORS`, `NOTICE`), except the firmware above.
+Eclipse Public License 2.0 with GPL-2.0-or-later as a Secondary License (see `LICENSES/EPL-2.0.txt`; the Nokia-derived files are our updated versions relicensed from EPL-1.0 under its section 7, unmodified Symbian sources are fetched from upstream and remain EPL-1.0), copyright The Phorepoc Authors (`AUTHORS`, `NOTICE`), except the firmware above.
 
 Contributions are welcome under the same terms: add yourself to `AUTHORS`.

@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // wlantest.mmp -- OURS (PinePhone WiFi W3): a WLAN management client -- asks wlmserver for a scan and lists the
 // networks it found (the whole 2010 stack down to our WHA PDD runs under it); SSM_TEST=wlantest stages it as ssmtest.exe

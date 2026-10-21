@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // phemodemtest.cpp -- OURS (2026-10-17, modem rung M1): is the EG25-G alive on
 // UART3? Opens RBusDevComm unit 3 (the "Comm.A64" PDD built with MODEM=1: opening it runs the kernel's bounded power-up

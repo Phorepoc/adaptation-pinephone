@@ -1,6 +1,6 @@
 /* Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
  * Copyright The Phorepoc Authors
- * SPDX-License-Identifier: EPL-1.0 */
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later */
 
 // hctlh5.h -- OURS (Bluetooth rung R2, 2026-10-10): the H5 (Three-wire UART) HCTL for the PinePhone's RTL8723CS on
 // UART1. Forked from the 2010 BCSP HCTL (Nokia, EPL v1.0; hctlbcsp.h): the SLIP framing, the header, the checksum,

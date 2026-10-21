@@ -1,5 +1,5 @@
 /* Copyright The Phorepoc Authors
- * SPDX-License-Identifier: EPL-1.0 */
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later */
 
 // rtlinitialisor.h -- OURS (Bluetooth rung R3, 2026-10-10): the Realtek RTL8723CS controller-initialisation plug-in
 // of the 2010 HCIv2 framework. Shape of the TI initialisor (bthci/hci2implementations/initialisors/ti, Nokia, EPL

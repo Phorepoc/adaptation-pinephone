@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-1.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # make_pinephone_image.sh [rom] -- package a BOARD=a64 ROM for the PinePhone's U-Boot.
 # Output in .pinephone-build/:

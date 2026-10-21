@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // phemodemtest.mmp -- OURS (modem rung M1): powers the EG25-G through the UART3
 // serial PDD (RBusDevComm unit 3, MODEM=1 kernel), runs a few AT commands, powers it down; "PH: modem" lines

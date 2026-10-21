@@ -1,6 +1,6 @@
 /* Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
  * Copyright The Phorepoc Authors
- * SPDX-License-Identifier: EPL-1.0 */
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later */
 
 // hctlh5controllermanager.h -- OURS (Bluetooth rung R2, 2026-10-10): the H5 HCTL's controller manager = the power
 // and hard-reset interfaces of the HCI framework over the chip's enable pin. Forked from the 2010 BCSP controller

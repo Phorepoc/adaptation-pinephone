@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: EPL-1.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # make_pinephone_sd.sh -- a whole SD-card image for the PinePhone ( "First hardware
 # test"), to write with balenaEtcher / dd. Run make_pinephone_image.sh first.

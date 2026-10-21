@@ -1,6 +1,6 @@
 // Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // rtlinitialisor.cpp -- OURS (Bluetooth rung R3, 2026-10-10): see rtlinitialisor.h. Skeleton from the TI initialisor
 // (Nokia, EPL v1.0); the Realtek protocol from Linux btrtl.c / hci_h5.c:

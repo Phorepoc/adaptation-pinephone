@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // wlanjoin.mmp -- OURS (PinePhone WiFi W4): joins a WLAN through the whole 2010 stack -- a WLAN IAP written into
 // CommsDat (LANService + WLANServiceTable + IAP on the WLANBearer), RConnection::Start on it (wlanagt -> wlmserver ->

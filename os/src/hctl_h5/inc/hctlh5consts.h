@@ -1,6 +1,6 @@
 /* Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
  * Copyright The Phorepoc Authors
- * SPDX-License-Identifier: EPL-1.0 */
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later */
 
 // hctlh5consts.h -- OURS (Bluetooth rung R2, 2026-10-10): the constants of the H5 (Three-wire UART, Bluetooth Core
 // Vol 4 Part D) HCTL. Forked from the 2010 BCSP HCTL's hctlbcspconsts.h (Nokia, EPL v1.0): the header bits, the

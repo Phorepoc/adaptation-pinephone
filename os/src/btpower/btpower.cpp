@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // btpower.cpp -- OURS (2026-10-10, Bluetooth rung R2): does the 2010 Bluetooth stack come up on the PinePhone's
 // RTL8723CS over our H5 HCTL? RBTPowerControl::Open starts the stack (RSocketServ::StartProtocol of btlinkmanager

@@ -1,6 +1,6 @@
 /* Portions Copyright (c) Nokia Corporation and/or its subsidiary(-ies)
  * Copyright The Phorepoc Authors
- * SPDX-License-Identifier: EPL-1.0 */
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later */
 
 // hctlconfiginterface.h -- the HCTL configuration interface the TI HCTL defines (2010 release,
 // bthci/hci2implementations/hctls/ti/inc/HCTLConfigInterface.h, Nokia, EPL v1.0; @internalTechnology, so not in the

@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: EPL-1.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // btengon.mmp -- OURS (Bluetooth rung R4): switches Bluetooth on through the S60 engine (CBTEngSettings)
 TARGET			btengon.exe
