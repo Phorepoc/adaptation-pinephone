@@ -9,7 +9,7 @@
 # Copy both to the boot partition U-Boot reads boot.scr from. Default rom: .bootstrap-build/ekern.rom
 # (built with BOARD=a64 SMP=1 MMODEL=flexible ... bash tools/kernel/build_ekern_rom.sh).
 set -eu
-cd "$(dirname "$0")/../.."
+cd "${KVIEW:-$(dirname "$0")/../..}"   # KVIEW: the tree root (the pdk assembles it for the public repos)
 ROM="${1:-.bootstrap-build/ekern.rom}"; O=.pinephone-build; mkdir -p "$O"
 [ -f "$ROM" ] || { echo "no ROM at $ROM"; exit 1; }
 # the shim needs docker (aarch64 gcc); rebuild it only when its source changed -- the ROM-only loop stays docker-free
