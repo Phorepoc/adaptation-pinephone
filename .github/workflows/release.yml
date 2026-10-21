@@ -1,0 +1,22 @@
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: EPL-1.0
+
+# release.yml -- the PinePhone image: a whole SD-card image (.img.xz) to write with balenaEtcher, built by the pdk's
+# reusable workflow from the commits board.lock pins. A tag v* publishes it as a draft release of this repository
+# (review, then publish); a manual run only uploads it as a workflow artifact.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  image:
+    uses: Phorepoc/pdk/.github/workflows/board-image.yml@main
+    with:
+      board: pinephone
+      release: ${{ startsWith(github.ref, 'refs/tags/') }}
+    permissions:
+      contents: write
+      packages: read
