@@ -16,6 +16,7 @@ MIB = 2048                        # sectors per MiB
 P1 = (4 * MIB, 60 * MIB)          # golden (slot A): FAT32 LBA, bootable
 C = (64 * MIB, 1024 * MIB)        # P3 = C: (FAT32 LBA, 0x0C)
 SLOT_B = (1088 * MIB, 1024 * MIB) # P2 = slot B (raw; 0x220000) -- KSlotBSector
+CTL = 6144                        # the A/B control sector (a64_glue.cpp KCtlSector, boot.cmd 0x1800)
 D = (2112 * MIB, 0)               # P4 = D: (size 0 = to the end of the card; the phone grows it)
 assert SLOT_B[0] == 0x220000
 
@@ -41,9 +42,24 @@ def main():
     img[8192:8192 + len(spl)] = spl
     img[P1[0] * 512:P1[0] * 512 + len(p1)] = p1
     img[C[0] * 512:C[0] * 512 + len(chead)] = chead
+    # a release card: the image in slot B + the control sector {'PHSL', INSTALLED (3), len, word sum} (a64_glue.cpp
+    # KCtlSector; boot.cmd boots an INSTALLED slot B every time). The image file then runs to the end of the image.
+    slotb = os.path.join(d, "slotb.img")
+    sb = b""
+    if os.path.exists(slotb):
+        sb = open(slotb, "rb").read()
+        assert len(sb) <= SLOT_B[1] * 512, "image larger than slot B"
+        words = len(sb) // 4
+        total = sum(struct.unpack_from("<%dI" % words, sb)) & 0xFFFFFFFF
+        img[CTL * 512:CTL * 512 + 16] = struct.pack("<IIII", 0x4C534850, 3, len(sb), total)
     out = os.path.join(d, "phorepoc-pinephone-sd.img")
-    open(out, "wb").write(img)
-    print(f"sd_layout: {out} ({len(img) >> 20} MiB): P1 golden @{P1[0]} +{P1[1]}, P2 slot B @{SLOT_B[0]:#x} +{SLOT_B[1]}, "
+    with open(out, "wb") as f:
+        f.write(img)
+        if sb:
+            f.seek(SLOT_B[0] * 512)                   # (the gap stays a hole: a sparse file, small once compressed)
+            f.write(sb)
+        size = f.tell()
+    print(f"sd_layout: {out} ({size >> 20} MiB{', slot B = the installed image' if sb else ''}): P1 @{P1[0]} +{P1[1]}, P2 slot B @{SLOT_B[0]:#x} +{SLOT_B[1]}, "
           f"P3 C: @{C[0]} +{C[1]}, P4 D: @{D[0]} (to the end of the card)")
 
 
