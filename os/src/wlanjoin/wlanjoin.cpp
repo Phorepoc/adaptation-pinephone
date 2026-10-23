@@ -402,6 +402,52 @@ static void RunL()
 		p.Close();
 		}
 	}
+	// on-device TLS tests while the connection is held: C:\data\sslresume_args.txt = one argument line per run of
+	// sslresume.exe (the tls repo's session-resumption test: "host port"), absent = none. 2026-10-21
+	{
+	RFs tfs;
+	RFile tf;
+	TBuf8<400> lines;
+	if (tfs.Connect() == KErrNone)
+		{
+		if (tf.Open(tfs, _L("C:\\data\\sslresume_args.txt"), EFileRead | EFileShareReadersOnly) == KErrNone)
+			{
+			tf.Read(lines);
+			tf.Close();
+			}
+		tfs.Close();
+		}
+	TInt pos = 0;
+	while (pos < lines.Length())
+		{
+		TInt eol = lines.Mid(pos).Locate('\n');
+		TPtrC8 l8 = eol < 0 ? lines.Mid(pos) : lines.Mid(pos, eol);
+		pos += (eol < 0 ? lines.Length() - pos : eol + 1);
+		TBuf<80> args;
+		args.Copy(l8.Left(80));
+		args.Trim();
+		if (!args.Length())
+			continue;
+		RProcess p;
+		TInt pr = p.Create(_L("sslresume.exe"), args);
+		RDebug::Printf("[wlanjoin] sslresume.exe %S: create %d", &args, pr);
+		if (pr != KErrNone)
+			continue;
+		TRequestStatus ps;
+		p.Logon(ps);
+		p.Resume();
+		RTimer t;
+		t.CreateLocal();
+		TRequestStatus ts;
+		t.After(ts, 90000000);
+		User::WaitForRequest(ps, ts);
+		if (ps == KRequestPending) { p.Kill(KErrTimedOut); User::WaitForRequest(ps); }
+		else { t.Cancel(); User::WaitForRequest(ts); }
+		RDebug::Printf("[wlanjoin] sslresume.exe: exit %d", ps.Int());
+		t.Close();
+		p.Close();
+		}
+	}
 	RunPhwebtest(EFalse);
 	RDebug::Printf("[wlanjoin] holding the connection %d s", KHoldSeconds);
 	User::After(KHoldSeconds * 1000000);
