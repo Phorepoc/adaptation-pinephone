@@ -1,30 +1,41 @@
 # adaptation-pinephone
 
-The PINE64 PinePhone device adaptation of Phorepoc, on [adaptation-a64](https://github.com/Phorepoc/adaptation-a64):
-the board files (Bluetooth and WLAN configuration and firmware, sensors) and the phone's own components and tests
-(the RTL8723CS Bluetooth transport and initialiser, WLAN bring-up).
+This repository makes Phorepoc run on the PINE64 PinePhone. The drivers for the phone's chip, the Allwinner A64, are in
+[adaptation-a64](https://github.com/Phorepoc/adaptation-a64). What's here is the phone itself: its Bluetooth and Wi-Fi
+setup and firmware, its sensors, and the tests we run on it.
 
-## Layout
+## Try it
+
+Download the `.img.xz` file from the [releases](https://github.com/Phorepoc/adaptation-pinephone/releases) and write it
+to a microSD card with [balenaEtcher](https://etcher.balena.io). Put the card in and switch the phone on. Phorepoc runs
+from the card, so nothing on the phone is touched. Take the card out and the phone boots its own system again.
+
+## Building
+
+The [pdk](https://github.com/Phorepoc/pdk) README has the commands for a PinePhone build, from the source to the SD card
+image. With this repository, adaptation-a64 and mesa-symbian checked out next to core and the pdk, `-b pinephone` picks
+them up by itself.
+
+The release images are built by GitHub Actions at the commits listed in `board.lock`. Pushing a `v*` tag attaches them
+to a draft release.
+
+## What's in here
 
 ```
-os/src/phorepoc-arm/board/        the board: bt/, wlan/ (firmware), cf/ ...
-os/src/<component>/               hctl_h5, initialisor_rtl, wlanhwinit and the phone tests
-registry/components_pinephone.py  this adaptation's components (merged into core's registry)
+os/src/phorepoc-arm/board/        the phone's settings, plus Bluetooth and Wi-Fi configuration and firmware
+os/src/<component>/               the Bluetooth driver (hctl_h5, initialisor_rtl), Wi-Fi start-up, phone tests
+os/tools/phorepoc-arm/            the scripts that make the SD card image
+registry/components_pinephone.py  the components this repository adds
 ```
 
-`os/` is laid over [core](https://github.com/Phorepoc/core)'s `os/` at build time, so paths match core's.
+At build time `os/` is laid over core's `os/`, so the paths line up with core's.
 
-**Status:** the components here build one by one with the pdk (`ph component build -b pinephone -arch arm <name>`). The
-PinePhone **image** (the ARM kernel and ROM link, the AArch64 boot shim, the U-Boot packaging) is not in the public
-pdk yet; it is being ported. Until then, the PC board is the one that builds a complete image.
+## License
 
-## Firmware
+Code we wrote is Apache-2.0. Symbian files we've changed are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
+Symbian files we use unchanged stay EPL-1.0. The license texts are in `LICENSES/`.
 
-`os/src/phorepoc-arm/board/{bt,wlan}/fw/` holds Realtek firmware from linux-firmware, redistributable under the
-licence next to it (`LICENCE.rtlwifi_firmware.txt`).
+The Realtek firmware in `os/src/phorepoc-arm/board/bt/fw/` and `wlan/fw/` comes from linux-firmware, and can be
+redistributed under the license next to it.
 
-## Licence
-
-Apache-2.0 for our own code (see `LICENSES/Apache-2.0.txt`); the Nokia-derived files are our updated versions under EPL-2.0 with GPL-2.0-or-later as a Secondary License (`LICENSES/EPL-2.0.txt`; relicensed from EPL-1.0 under its section 7); unmodified Symbian sources are fetched from upstream and remain EPL-1.0, copyright The Phorepoc Authors (`AUTHORS`, `NOTICE`), except the firmware above.
-
-Contributions are welcome under the same terms: add yourself to `AUTHORS`.
+Contributions are welcome under the same terms. Add your name to `AUTHORS` in your first pull request.
