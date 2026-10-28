@@ -22,7 +22,7 @@ to a draft release.
 ## What's in here
 
 ```
-os/src/phorepoc-arm/board/        the phone's settings, plus Bluetooth and Wi-Fi configuration and firmware
+os/board/                       the phone's settings, plus Bluetooth and Wi-Fi configuration and firmware
 os/src/<component>/               the Bluetooth driver (hctl_h5, initialisor_rtl), Wi-Fi start-up, phone tests
 os/tools/phorepoc-arm/            the scripts that make the SD card image
 registry/components_pinephone.py  the components this repository adds
@@ -35,7 +35,7 @@ At build time `os/` is laid over core's `os/`, so the paths line up with core's.
 Code we wrote is Apache-2.0. Symbian files we've changed are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
 Symbian files we use unchanged stay EPL-1.0. The license texts are in `LICENSES/`.
 
-The Realtek firmware in `os/src/phorepoc-arm/board/bt/fw/` and `wlan/fw/` comes from linux-firmware, and can be
+The Realtek firmware in `os/board/bt/fw/` and `wlan/fw/` comes from linux-firmware, and can be
 redistributed under the license next to it.
 
 Contributions are welcome under the same terms. Add your name to `AUTHORS` in your first pull request.

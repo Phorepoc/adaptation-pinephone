@@ -1,0 +1,15 @@
+# The board's own Z: files (read by the pdk's zdata_gen.py): rom path = OS tree path
+# Bluetooth HCI plug-ins (hctl_h5 + the Realtek initialisor) on UART1
+private/101f7989/bluetooth/corehci_symbian.ini = board/bt/corehci_symbian.ini
+private/101f7989/bluetooth/hctl_h5.ini = board/bt/hctl_h5.ini
+private/101f7989/bluetooth/initialisor_rtl.ini = board/bt/initialisor_rtl.ini
+# the RTL8723CS firmware (linux-firmware's, unmodified, with Realtek's notice)
+private/101f7989/bluetooth/rtl8723cs_xx_fw.bin = board/bt/fw/rtl8723cs_xx_fw.bin
+private/101f7989/bluetooth/rtl8723cs_xx_config.bin = board/bt/fw/rtl8723cs_xx_config.bin
+private/101f7989/bluetooth/LICENCE.rtlwifi_firmware.txt = board/bt/fw/LICENCE.rtlwifi_firmware.txt
+# auto-rotate activation rule: the stock rule minus its device-lock condition
+private/10282bc4/rules/autorotateui_activate.rul = board/cf/autorotateui_activate.rul
+# Wi-Fi: the RTL8703B firmware (linux-firmware's, unmodified, same licence)
+resource/wlan/rtw8703b_fw.bin = board/wlan/fw/rtw8703b_fw.bin
+resource/wlan/rtw8703b_wow_fw.bin = board/wlan/fw/rtw8703b_wow_fw.bin
+resource/wlan/LICENCE.rtlwifi_firmware.txt = board/wlan/fw/LICENCE.rtlwifi_firmware.txt

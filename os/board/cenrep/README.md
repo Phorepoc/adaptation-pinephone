@@ -1,11 +1,11 @@
 # Board-owned CenRep overrides (PinePhone / BOARD=a64)
 
 `tools/make_phorepoc_rom.sh` stages every `*.txt` here as `private\10202be9\<uid>.txt` AFTER the generated
-(`.cenrep-gen`, from the crml files) and the listed (`tools/kernel/cenrep_files.txt`) repositories, and BEFORE the
+(`.cenrep-gen`, from the crml files) and the listed (`config/cenrep_files.txt`) repositories, and BEFORE the
 per-run `CENREP_EXTRA` overrides -- only on the ARM ROM (`ROM_ARCH=arm`). Each file is a whole repository (the
 cenrep text format), copied from the generated one and edited; say why in this table.
 
-**Encoding: UTF-16LE with a BOM and CRLF line ends**, like `.cenrep-gen/*.txt` and `tools/kernel/cenrep/*.txt`. A
+**Encoding: UTF-16LE with a BOM and CRLF line ends**, like `.cenrep-gen/*.txt` and `config/cenrep/*.txt`. A
 plain ASCII/LF file is "corrupt" to the CenRep server (`CRepository::NewL` leaves -20 and the owner falls back to its
 compiled-in defaults -- boot 209, 2026-10-10). Re-encode with:
 `py -c "p='<file>';t=open(p,'rb').read().decode('ascii').replace('\r\n','\n').replace('\n','\r\n');open(p,'wb').write(b'\xff\xfe'+t.encode('utf-16-le'))"`
