@@ -57,9 +57,9 @@ echo "[3/5] the recipe's tree ($V)"
 # link every entry of the given folders into one folder (later folders do not replace earlier entries)
 merge() { local dst=$1; shift; mkdir -p "$dst"; for d in "$@"; do [ -d "$d" ] || continue
   for e in "$d"/* "$d"/.[!.]*; do [ -e "$e" ] || continue; [ -e "$dst/${e##*/}" ] || ln -s "$e" "$dst/${e##*/}"; done; done; }
-rm -rf "$V/src" "$V/tools" "$V/toolchain" "$V/emitter" "$V/baseline" "$V/bin"
+rm -rf "$V/src" "$V/board" "$V/config" "$V/tools" "$V/toolchain" "$V/emitter" "$V/baseline" "$V/bin"
 mkdir -p "$V"
-ln -s "$OS_ROOT/src" "$V/src"
+ln -s "$OS_ROOT/src" "$V/src"; ln -s "$OS_ROOT/board" "$V/board"; ln -s "$OS_ROOT/config" "$V/config"
 rm -rf "$V/third_party" "$V/.epoc32"; ln -s "$OS_ROOT/third_party" "$V/third_party"
 # the exported public headers (tools/epoc32_export.py) the kernel-side NGA sources include (<sgresource/...>)
 [ -d "$PHOREPOC_BUILD/epoc32" ] && ln -s "$PHOREPOC_BUILD/epoc32" "$V/.epoc32"
@@ -78,9 +78,9 @@ ln -s "$SYM10" "$V/baseline/symbian-2010"
 ln -s "$KHS" "$V/baseline/kernelhwsrv"
 mkdir -p "$V/bin"; printf '#!/bin/sh\nexec python3 "$@"\n' > "$V/bin/py"; chmod +x "$V/bin/py"
 export PATH="$V/bin:$PATH" KVIEW="$V"
-# the AArch64 entry shim (needs an AArch64 GCC, which this container lacks: tools/make_arm_shim.sh builds it on the host)
+# the AArch64 entry shim (needs an AArch64 GCC, which this container lacks: the SoC's recipes/host/shim.sh builds it on the host)
 [ -f "$A/a53/shim-ram-noprobe.bin" ] || [ -n "$(command -v aarch64-linux-gnu-gcc)" ] \
-  || { echo "no entry shim in $A/a53: run tools/make_arm_shim.sh <adaptation-a64> <build> on the host first" >&2; exit 1; }
+  || { echo "no entry shim in $A/a53: run the SoC's recipes/host/shim.sh on the host first" >&2; exit 1; }
 mkdir -p "$A/a53"; rm -rf "$V/.a53-build"; ln -s "$A/a53" "$V/.a53-build"
 echo "[4/5] kernel + ROM (build_ekern_rom.sh BOARD=a64 PHOREPOC=1 BOOT=ssm)"
 mkdir -p "$OUT"
