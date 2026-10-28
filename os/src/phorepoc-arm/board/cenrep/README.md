@@ -21,3 +21,5 @@ and check with `file <file>` ("Unicode text, UTF-16, little-endian").
 
 - `2000b494.txt` (tactile feedback): key 0x90 (KTactileHapticsPlugin) = 0x2001CB9B, the vibra player (HWRM vibra ->
   the motor) instead of the haptics-chip player 0x2001CB99 -- the PinePhone has a plain vibration motor.
+  Keys 0x25-0x2e (vibra pulse lengths, ms): basic 60-80, sensitive 40 instead of 15-50 / 10: the motor does not
+  spin up in 15 ms (a touch gave no felt buzz, 2026-10-28).
