@@ -14,7 +14,7 @@
 #   P1    4 MiB, 60 MiB   FAT32, bootable: boot.scr + symbian.img = slot A, the golden image
 #   P3    64 MiB, 1 GiB   FAT32 "C:" (the phone's C: drive; pre-formatted here; EFAT32.FSY)
 #   P2    1088 MiB, 1 GiB raw (type 0xDA): slot B, written over USB by phlink -- KSlotBSector = 0x220000, boot.cmd
-#   P4    2112 MiB, rest  "D:" (FAT32 type, size 0 = to the end of the card: the phone grows it; unformatted at first)
+#   P4    2112 MiB, rest  "E:" (FAT32 type, size 0 = to the end of the card: the first boot sizes it from the card and formats it)
 # The image holds only the front of the card (U-Boot .. C:'s FAT metadata), so flashing it stays quick.
 # Output: .pinephone-build/phorepoc-pinephone-sd.img. The U-Boot binary is cached in .pinephone-build/uboot/.
 #
