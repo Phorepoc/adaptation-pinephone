@@ -15,7 +15,6 @@ jobs:
   image:
     uses: Phorepoc/pdk/.github/workflows/board-image.yml@main
     with:
-      board: pinephone
       release: ${{ startsWith(github.ref, 'refs/tags/') }}
     permissions:
       contents: write
