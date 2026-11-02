@@ -54,3 +54,24 @@ jobs:
     permissions:
       contents: write
       packages: write   # (the split build hands its tree between jobs as a run image)
+
+  # the release itself is made here, in this repository's own workflow (see the pdk's board-image.yml)
+  publish:
+    needs: [version, image]
+    if: needs.version.outputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-files
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          gh release view "$VERSION" -R "${{ github.repository }}" >/dev/null 2>&1 ||
+            gh release create "$VERSION" -R "${{ github.repository }}" --target "${{ github.sha }}" --title "$VERSION" \
+              --notes-file notes.md --draft   # published once the phone tests pass
+          gh release upload "$VERSION" out/* -R "${{ github.repository }}" --clobber
