@@ -2,8 +2,8 @@
 # Copyright The Phorepoc Authors
 # SPDX-License-Identifier: Apache-2.0
 
-# recipes/image.sh -- the PinePhone image ("ph image recipe image -b pinephone"). Runs on Linux inside the
-# toolchain container, after the ARM components are built (ph component build -A -arch arm -b pinephone).
+# recipes/image.sh -- the PinePhone image ("phe image recipe image -b pinephone"). Runs on Linux inside the
+# toolchain container, after the ARM components are built (phe component build -A -arch arm -b pinephone).
 #
 #   1. the kernel include shims (as make_phorepoc_kernel.sh) -> <build>/arm/kinc (the device builds include them)
 #   2. the core images the kernel boots first (euser, efsrv, hal, efile: the device builds) -> <build>/arm/device
@@ -20,7 +20,7 @@
 # Output: <build>/pinephone/{symbian.img,boot.scr,symbian.img.map}. Settings: PRUNE (default 1: drop images whose
 # imports the ROM lacks), NGA (default 1), RAM_MB (make_pinephone_image.sh).
 set -eu
-PDK="${PHOREPOC_PDK:?run it with ph image recipe image -b <board>}"
+PDK="${PHOREPOC_PDK:?run it with phe image recipe image -b <board>}"
 # PHOREPOC_QT48=1 = the Qt 4.8 configuration (registry/components_s4.py: the Qt libraries, libstdcpp/osncore/alf with their x32 flags; needs the Qt source tree in <build>/qt48, fetched separately);
 # the image must be made with the same setting as the components
 export PHOREPOC_QT48="${PHOREPOC_QT48:-0}"
@@ -34,7 +34,7 @@ SYM="$PHOREPOC_SYMBIAN"; SYM10="$SYM/symbian-2010"; KHS="$SYM10/oss.FCL.sf.os.ke
 A="$PHOREPOC_BUILD/arm"; DEV="$A/device"; V="$A/kview"; OUT="$PHOREPOC_BUILD/pinephone"
 [ -f "$OS_ROOT/tools/kernel/build_ekern_rom.sh" ] || { echo "no ARM image recipe in $OS_ROOT/tools/kernel" >&2; exit 1; }
 [ -f "$OS_ROOT/tools/phorepoc-arm/make_pinephone_image.sh" ] || { echo "no PinePhone packager in $OS_ROOT/tools/phorepoc-arm" >&2; exit 1; }
-[ -d "$A/img" ] || { echo "no ARM images in $A/img (ph component build -A -arch arm -b pinephone)" >&2; exit 1; }
+[ -d "$A/img" ] || { echo "no ARM images in $A/img (phe component build -A -arch arm -b pinephone)" >&2; exit 1; }
 
 echo "[1/5] kernel include shims"
 KINC="$A/kinc"; rm -rf "$KINC"; mkdir -p "$KINC/kernel"
