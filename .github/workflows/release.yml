@@ -8,6 +8,7 @@ name: release
 
 on:
   push:
+    branches: [main]   # every push builds and checks the image
     tags: ["v*"]
   workflow_dispatch:
 
