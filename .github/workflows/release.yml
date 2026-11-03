@@ -62,9 +62,18 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          path: repo
+          sparse-checkout: .github/release-notes.md
+          sparse-checkout-cone-mode: false
       - uses: actions/download-artifact@v4
         with:
           name: release-files
+      - name: The notes (how to use the files, then what they were built from)
+        run: |
+          { cat repo/.github/release-notes.md; echo; cat notes.md; } > release-notes.md
+          mv release-notes.md notes.md
       - name: Release
         env:
           GH_TOKEN: ${{ github.token }}

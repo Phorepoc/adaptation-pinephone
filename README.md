@@ -31,11 +31,21 @@ the PinePhone that means the real Symbian^3 interface and apps on a phone with a
 
 ## Try it
 
-1. Download the `.img.xz` file from the [latest release](https://github.com/Phorepoc/adaptation-pinephone/releases/latest).
+1. Download `phorepoc-pinephone-sdcard.img.xz` from the
+   [latest release](https://github.com/Phorepoc/adaptation-pinephone/releases/latest).
 2. Write it to a microSD card with [balenaEtcher](https://etcher.balena.io).
 3. Put the card in and switch the phone on.
 
 Phorepoc runs from the card. Take the card out and the phone boots its own system again.
+
+These are development images for now. Besides Phorepoc, the card holds a small fallback system (the golden image): if a
+newer image fails to boot, the phone falls back to it. To update a card, push the release's
+`phorepoc-pinephone-update.img.xz` with the [pdk](https://github.com/Phorepoc/pdk), after unpacking it:
+
+```sh
+xz -d phorepoc-pinephone-update.img.xz
+phe device push phorepoc-pinephone-update.img -w "Idle: ready"
+```
 
 ## What works
 
@@ -56,8 +66,8 @@ The [pdk](https://github.com/Phorepoc/pdk) has the commands, from the source to 
 checked out next to core and the pdk, `-b pinephone` picks them up by itself.
 
 Every push to `main` builds the image on GitHub Actions, from the exact commits `board.lock` pins. When the commits ask
-for a release ([Conventional Commits](https://www.conventionalcommits.org): `feat`, `fix` or a breaking change), the
-image becomes a draft release, which is published once it has passed the phone tests on a real PinePhone.
+for a release ([Conventional Commits](https://www.conventionalcommits.org): `feat`, `fix` or a breaking change), it is
+released under the next version.
 
 <details>
 <summary>What's in this repository</summary>

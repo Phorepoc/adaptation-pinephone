@@ -21,10 +21,16 @@
 # RELEASE=1 (the release workflow): the card a user writes. The image ($O/symbian.img) goes into slot B with the
 # control sector INSTALLED, which boot.cmd boots every time; P1 holds only boot.scr (no golden image). The U-Boot
 # source package (Debian's, the exact version embedded: GPL-2.0) is put next to the image for the release.
+# RELEASE=dev (the release workflow's development card): the layout of a development phone -- the golden image
+# ($O/golden.img) in P1 as slot A, the image in slot B INSTALLED, so the card boots it; the first upload (phe device
+# push) arms slot B one-shot as on any development card. The U-Boot source goes next to it as for RELEASE=1.
 O=${O:-.pinephone-build}
 PY=python3; python3 -c "" 2>/dev/null || PY=py         # (Windows: python3 may be the Store stub)
 if [ "${RELEASE:-0}" = 1 ]; then
 	[ -f "$O/symbian.img" ] && [ -f "$O/boot.scr" ] || { echo "no $O/symbian.img + boot.scr: run make_pinephone_image.sh first"; exit 1; }
+	cp -f "$O/symbian.img" "$O/slotb.img"
+elif [ "${RELEASE:-0}" = dev ]; then
+	[ -f "$O/symbian.img" ] && [ -f "$O/golden.img" ] && [ -f "$O/boot.scr" ] || { echo "RELEASE=dev needs $O/symbian.img, golden.img and boot.scr"; exit 1; }
 	cp -f "$O/symbian.img" "$O/slotb.img"
 else
 	# slot A = $O/golden.img (the text-shell ROM: build it, then cp symbian.img golden.img) -- symbian.img is slot B's
@@ -45,7 +51,7 @@ MSYS_NO_PATHCONV=1 docker run --rm -e RELEASE="${RELEASE:-0}" -v "$OW:/o" debian
     cp x/usr/lib/u-boot/pinephone/u-boot-sunxi-with-spl.bin /o/uboot/
     ls u-boot-sunxi_*.deb > /o/uboot/VERSION
   fi
-  if [ "$RELEASE" = 1 ] && ! ls /o/uboot/u-boot-source-*.tar >/dev/null 2>&1; then
+  if [ "$RELEASE" != 0 ] && ! ls /o/uboot/u-boot-source-*.tar >/dev/null 2>&1; then
     # the source of exactly the binary above (u-boot-sunxi is built from the u-boot source package)
     v=$(sed -n "s/^u-boot-sunxi_\(.*\)_arm64\.deb$/\1/p" /o/uboot/VERSION)
     mkdir -p /tmp/src && cd /tmp/src && apt-get source -qq --download-only "u-boot=$v" >/dev/null
