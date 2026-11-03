@@ -28,8 +28,10 @@ done
 # the image recipe's outputs share the packager's folder: keep them, build the golden ROM, put them back
 keep=$(mktemp -d)
 for f in symbian.img symbian.img.map boot.scr; do [ -f "$V/.pinephone-build/$f" ] && cp -f "$V/.pinephone-build/$f" "$keep/"; done
-# without SECONDARY=efile the ROM silently drops ESHELL/EWSRV
-( cd "$V" && PACKAGE=tools/phorepoc-arm/make_pinephone_image.sh BOARD=a64 SMP=1 MMODEL=flexible SECONDARY=efile \
+# without SECONDARY=efile the ROM silently drops ESHELL/EWSRV. ROM_STABLE=0: the compact sequential layout -- the image's
+# placement map (rom.placement.json) would put these few files at the full ROM's addresses (a 190 MB golden that does not
+# fit the card's 60 MB boot partition) and would be overwritten with the golden's slots
+( cd "$V" && PACKAGE=tools/phorepoc-arm/make_pinephone_image.sh BOARD=a64 SMP=1 MMODEL=flexible SECONDARY=efile ROM_STABLE=0 \
     bash tools/kernel/build_ekern_rom.sh ) > "$OUT/golden.log" 2>&1 \
   || { echo "GOLDEN FAILED:"; tail -20 "$OUT/golden.log"; exit 1; }
 cp -f "$V/.pinephone-build/symbian.img" "$OUT/golden.img"; cp -f "$V/.pinephone-build/symbian.img.map" "$OUT/golden.img.map"
