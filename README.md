@@ -1,11 +1,11 @@
 <p align="center">
-  <img src=".github/readme/phone.png" width="760" alt="Phorepoc on a PinePhone: the home screen, the Menu, Applications and Calculator, in the built-in Haze theme">
+  <img src=".github/readme/phone.png" width="760" alt="Phorepoc OS on a PinePhone: the home screen, the Menu, Applications and Calculator, in the built-in Haze theme">
 </p>
 
-<h1 align="center">Phorepoc for the PinePhone</h1>
+<h1 align="center">Phorepoc OS for the PinePhone</h1>
 
 <p align="center">
-  <b>Symbian^3 on the PINE64 PinePhone, straight from a microSD card.</b><br>
+  <b>Phorepoc OS on the PINE64 PinePhone, straight from a microSD card.</b><br>
   The full interface with its own apps, graphics on the phone's GPU, Wi-Fi and sound. The phone's own system is never touched.
 </p>
 
@@ -25,9 +25,9 @@
 
 ---
 
-Symbian ran on hundreds of millions of phones and then stopped. In 2010 its source was released, and
-[Phorepoc](https://github.com/Phorepoc) builds that source with a modern compiler for hardware you can buy today. On
-the PinePhone that means the real Symbian^3 interface and apps on a phone with a modern chip, drawn by the phone's GPU.
+[Phorepoc OS](https://github.com/Phorepoc) is an open-source mobile operating system with its roots in Symbian, built
+from the source Nokia and the Symbian Foundation released in 2010. On the PinePhone it brings the Symbian^3 interface
+and its apps to a phone with a modern chip, drawn by the phone's GPU.
 
 ## Try it
 
@@ -36,9 +36,9 @@ the PinePhone that means the real Symbian^3 interface and apps on a phone with a
 2. Write it to a microSD card with [balenaEtcher](https://etcher.balena.io).
 3. Put the card in and switch the phone on.
 
-Phorepoc runs from the card. Take the card out and the phone boots its own system again.
+Phorepoc OS runs from the card. Take the card out and the phone boots its own system again.
 
-These are development images for now. Besides Phorepoc, the card holds a small fallback system (the golden image): if a
+These are development images for now. Besides Phorepoc OS, the card holds a small fallback system (the golden image): if a
 newer image fails to boot, the phone falls back to it. To update a card, push the release's
 `phorepoc-pinephone-update.img.xz` with the [pdk](https://github.com/Phorepoc/pdk), after unpacking it:
 
