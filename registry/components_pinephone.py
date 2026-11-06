@@ -32,6 +32,6 @@ COMPONENTS = {
 
 # core components that get this board's data (core registry: EXTEND)
 EXTEND = {
-    # the download app's device identity (board + architecture): it shows only what fits this board
-    "pheget": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pinephone.txt"]),
+    # the download app's device identity (board + architecture): it shows only what fits this board (the catalogue layer)
+    "catalogue_get": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pinephone.txt"]),
 }
