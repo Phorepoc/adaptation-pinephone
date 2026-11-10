@@ -9,7 +9,7 @@
 //   2. RConnection::Start on that IAP: wlanagt -> wlmserver (Join -> the UMAC's authentication + association ->
 //      EAPOL for WPA) -> wlannif up -> DHCP;
 //   3. DNS + an HTTP GET as nettest does, the local address logged;
-//   4. the connection kept 60 s (traffic + the engine's roaming/bss-lost logic), then stopped.
+//   4. the connection kept 60 s (traffic + the engine's roaming/bss-lost logic), then released (Close, not Stop).
 // The network: C:\wlanjoin.txt = "<ssid>|<psk>" (psk empty = open), else the open "EE WiFi" seen in W3's scans.
 // [wlanjoin] lines (A64_RDEBUG_LOG). Every wait is bounded.
 #include <e32base.h>
@@ -451,8 +451,12 @@ static void RunL()
 	RunPhwebtest(EFalse);
 	RDebug::Printf("[wlanjoin] holding the connection %d s", KHoldSeconds);
 	User::After(KHoldSeconds * 1000000);
-	conn.Stop();
-	RDebug::Printf("[wlanjoin] stopped; %s", fe == KErrNone ? "PASS" : "joined, fetch failed");
+	// Close, not Stop: Stop tears the interface down under every other client (the browser engines' RConnection, Open C's
+	// default connection), and Open C never restarts a default connection whose handle is still open -- every later
+	// getaddrinfo then failed at once (curl 6) for the rest of the boot. Closing only drops our hold; the interface idles
+	// down on its own once nobody uses it.
+	conn.Close();
+	RDebug::Printf("[wlanjoin] released; %s", fe == KErrNone ? "PASS" : "joined, fetch failed");
 	CleanupStack::PopAndDestroy(4);		// conn, ss, bt, sched
 	}
 
