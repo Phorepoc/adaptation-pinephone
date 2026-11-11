@@ -11,6 +11,7 @@
 //   3. DNS + an HTTP GET as nettest does, the local address logged;
 //   4. the connection kept 60 s (traffic + the engine's roaming/bss-lost logic), then released (Close, not Stop).
 // The network: C:\wlanjoin.txt = "<ssid>|<psk>" (psk empty = open), else the open "EE WiFi" seen in W3's scans.
+// A preferred access point: a line "bssid=08:bf:b8:7b:6e:18" in C:\wlanjoin.txt (PreferBssidL).
 // [wlanjoin] lines (A64_RDEBUG_LOG). Every wait is bounded.
 #include <e32base.h>
 #include <e32debug.h>
@@ -21,6 +22,10 @@
 #include <commdb.h>
 #include <cdbcols.h>
 #include <commdbconnpref.h>
+// (before wlancdbcols.h: its KWlanWpaPskLength macro breaks the constant of that name in the engine headers)
+#include <wlanmgmtclient.h>
+#include <wlanscaninfo.h>
+#include "rwlmserver.h"
 #include <wlancdbcols.h>
 #include <btengsettings.h>
 #include <btengconstants.h>
@@ -83,6 +88,100 @@ static void ReadConfig(TDes& aSsid, TDes& aPsk)
 			}
 		}
 	fs.Close();
+	}
+
+// "bssid=xx:xx:xx:xx:xx:xx" anywhere in C:\wlanjoin.txt -> ETrue + the six bytes
+static TBool ReadPreferredBssid(TWlanBssid& aBssid)
+	{
+	TBool found = EFalse;
+	RFs fs;
+	if (fs.Connect() != KErrNone)
+		return EFalse;
+	RFile f;
+	if (f.Open(fs, KConfigFile, EFileRead | EFileShareReadersOnly) == KErrNone)
+		{
+		TBuf8<256> b;
+		f.Read(b);
+		f.Close();
+		_LIT8(KKey, "bssid=");
+		const TInt at = b.Find(KKey);
+		if (at >= 0)
+			{
+			TLex8 lex(b.Mid(at + KKey().Length()));
+			aBssid.SetLength(0);
+			for (TInt i = 0; i < 6; ++i)
+				{
+				TUint v = 0;
+				if (lex.Val(v, EHex) != KErrNone || v > 0xFF)
+					break;
+				aBssid.Append(TUint8(v));
+				if (i < 5 && lex.Get() != ':')
+					break;
+				}
+			found = aBssid.Length() == 6;
+			}
+		}
+	fs.Close();
+	return found;
+	}
+
+// A preferred access point among several with one SSID (a router's radio and a mesh node, say). The 2010 engine picks
+// by signal (core_tools_parser_c::is_ap_compatible_with_iap); what it lets a client steer is its external blacklist:
+// RWLMServer::AddBssidToRoguelist -> core_server_c::add_bssid_to_rogue_list -> the permanent blacklist the selection
+// skips. So: scan, and when the preferred BSSID is seen, blacklist the other BSSIDs sending its SSID. Not seen = no
+// change (any access point of the network will do). The list lives in the engine until it restarts.
+static void PreferBssidL(const TWlanBssid& aPref)
+	{
+	RDebug::Printf("PH: [wlanjoin] preferred access point %02x:%02x:%02x:%02x:%02x:%02x",
+		aPref[0], aPref[1], aPref[2], aPref[3], aPref[4], aPref[5]);
+	CWlanMgmtClient* mgmt = CWlanMgmtClient::NewL();
+	CleanupStack::PushL(mgmt);
+	CWlanScanInfo* info = CWlanScanInfo::NewL();
+	CleanupStack::PushL(info);
+	TInt r = mgmt->GetScanResults(*info);
+	TBuf8<32> ssid;
+	TBool seen = EFalse;
+	if (r == KErrNone)                  // pass 1: the preferred access point's SSID
+		for (info->First(); !info->IsDone(); info->Next())
+			{
+			TWlanBssid b;
+			info->Bssid(b);
+			TUint8 len = 0;
+			const TUint8* data = NULL;
+			if (b == aPref && info->InformationElement(0, len, &data) == KErrNone)
+				{ ssid.Copy(TPtrC8(data, Min<TInt>(len, 32))); seen = ETrue; break; }
+			}
+	RDebug::Printf("PH: [wlanjoin] scan %d: preferred %s", r, seen ? "seen" : "not seen (no change)");
+	if (seen)
+		{
+		RWLMServer wlm;
+		User::LeaveIfError(wlm.Connect());
+		CleanupClosePushL(wlm);
+		RArray<TWlanBssid> done;
+		CleanupClosePushL(done);
+		for (info->First(); !info->IsDone(); info->Next())   // pass 2: the others with that SSID
+			{
+			TWlanBssid b;
+			info->Bssid(b);
+			TUint8 len = 0;
+			const TUint8* data = NULL;
+			if (b == aPref || info->InformationElement(0, len, &data) != KErrNone || TPtrC8(data, len) != ssid)
+				continue;
+			TBool dup = EFalse;
+			for (TInt i = 0; i < done.Count() && !dup; ++i)
+				dup = done[i] == b;
+			if (dup)
+				continue;
+			done.AppendL(b);
+			TMacAddress mac;
+			Mem::Copy(&mac, b.Ptr(), Min<TInt>(sizeof(mac), b.Length()));
+			const TInt ar = wlm.AddBssidToRoguelist(mac);
+			RDebug::Printf("PH: [wlanjoin] not joining %02x:%02x:%02x:%02x:%02x:%02x (rogue list) -> %d",
+				b[0], b[1], b[2], b[3], b[4], b[5], ar);
+			}
+		CleanupStack::PopAndDestroy(2);	// done, wlm
+		}
+	CleanupStack::PopAndDestroy(2);		// info, mgmt
 	}
 
 static TUint32 FindRecordByNameL(CCommsDatabase& aDb, const TDesC& aTable, const TDesC& aName)
@@ -344,6 +443,15 @@ static void RunL()
 			}
 		RDebug::Printf("PH: [wlanjoin] cmsetup: %d", cr);
 		}
+	{
+	TWlanBssid pref;
+	if (ReadPreferredBssid(pref))
+		{
+		TRAPD(pr, PreferBssidL(pref));  // best effort: a failure leaves the engine's own choice
+		if (pr != KErrNone)
+			RDebug::Printf("PH: [wlanjoin] preferred access point: %d (the engine chooses)", pr);
+		}
+	}
 	RSocketServ ss;
 	User::LeaveIfError(ss.Connect());
 	CleanupClosePushL(ss);
