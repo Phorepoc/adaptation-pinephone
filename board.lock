@@ -1,6 +1,6 @@
 # repository commit -- what the pinephone release is built from (pdk tools/board_lock.sh)
 pdk 9128ea379d3bbe12c327a3e4e1aacadd7d744d9c
-core 2bcd4a51379c2d9ab68e33ad3f9ff917cbb44c82
+core 33e122b8ad5b25069fd31ad46a4912bafc839498
 adaptation-a64 5ac28ff95fbe325112730be995c5e66f27c56d41
 adaptation-pinephone 8f57be9cfa24f944a9638acb66d4943747638b3c
 mesa-symbian f0566ebc623cfe022d84f8e41a3943124a9abd6a
