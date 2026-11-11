@@ -90,3 +90,7 @@ jobs:
           gh release upload "$VERSION" out/* -R "${{ github.repository }}" --clobber
           # (a draft left by an earlier run becomes this release: this commit, these files, published)
           gh release edit "$VERSION" -R "${{ github.repository }}" --target "${{ github.sha }}" --notes-file notes.md --draft=false
+      - name: Refresh the Catalogue index
+        uses: Phorepoc/pdk/.github/actions/index-refresh@main
+        with:
+          token: ${{ secrets.INDEX_DISPATCH_TOKEN }}
