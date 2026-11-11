@@ -138,19 +138,34 @@ static void PreferBssidL(const TWlanBssid& aPref)
 	CleanupStack::PushL(mgmt);
 	CWlanScanInfo* info = CWlanScanInfo::NewL();
 	CleanupStack::PushL(info);
-	TInt r = mgmt->GetScanResults(*info);
+	TInt r = KErrNone;
 	TBuf8<32> ssid;
 	TBool seen = EFalse;
-	if (r == KErrNone)                  // pass 1: the preferred access point's SSID
-		for (info->First(); !info->IsDone(); info->Next())
-			{
-			TWlanBssid b;
-			info->Bssid(b);
-			TUint8 len = 0;
-			const TUint8* data = NULL;
-			if (b == aPref && info->InformationElement(0, len, &data) == KErrNone)
-				{ ssid.Copy(TPtrC8(data, Min<TInt>(len, 32))); seen = ETrue; break; }
-			}
+	for (TInt attempt = 1; attempt <= 4 && !seen; ++attempt)   // the engine's scan can miss a radio: up to 4, 5 s apart
+		{
+		if (attempt > 1)
+			User::After(5000000);
+		r = mgmt->GetScanResults(*info);
+		TInt n = 0;
+		if (r == KErrNone)
+			for (info->First(); !info->IsDone(); info->Next())
+				{
+				TWlanBssid b;
+				info->Bssid(b);
+				TUint8 len = 0;
+				const TUint8* data = NULL;
+				TBuf8<32> s8;
+				if (info->InformationElement(0, len, &data) == KErrNone)
+					s8.Copy(TPtrC8(data, Min<TInt>(len, 32)));
+				if (b.Length() == 6)
+					RDebug::Printf("PH: [wlanjoin] scan %d: %02x:%02x:%02x:%02x:%02x:%02x rx %d ssid %d bytes", attempt,
+						b[0], b[1], b[2], b[3], b[4], b[5], info->RXLevel(), s8.Length());
+				++n;
+				if (b == aPref && !seen)
+					{ ssid = s8; seen = ETrue; }
+				}
+		RDebug::Printf("PH: [wlanjoin] scan %d: %d -> %d entries", attempt, r, n);
+		}
 	RDebug::Printf("PH: [wlanjoin] scan %d: preferred %s", r, seen ? "seen" : "not seen (no change)");
 	if (seen)
 		{
