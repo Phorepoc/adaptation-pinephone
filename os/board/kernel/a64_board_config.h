@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // What the PinePhone gives the A64 drivers (a64_board.h in the SoC repository): the panel, the pins its LEDs,
-// vibrator, modem and touch controller are wired to, and the names it shows. A pin is a PIO port number (A = 0, B = 1,
+// vibrator and touch controller are wired to, and the names it shows. A pin is a PIO port number (A = 0, B = 1,
 // C = 2, D = 3 ... H = 7) and a pin number in that port; "R" pins are on the separate R_PIO block (port L).
-// Wiring as in the Linux device tree sun50i-a64-pinephone.dtsi and the eg25-manager PinePhone 1.2 data.
+// Wiring as in the Linux device tree sun50i-a64-pinephone.dtsi.
 #ifndef A64_BOARD_CONFIG_H
 #define A64_BOARD_CONFIG_H
 
@@ -41,24 +41,6 @@
 #define A64_TOUCH_SDA_PIN 1
 #define A64_TOUCH_PIN_FUNC 2
 
-// The modem (Quectel EG25-G): control lines, all through transistors; the levels written are the GPIO levels
-#define A64_MODEM_DTR_PORT 1			// PB2: low = awake
-#define A64_MODEM_DTR_PIN 2
-#define A64_MODEM_PWRKEY_PORT 1			// PB3
-#define A64_MODEM_PWRKEY_PIN 3
-#define A64_MODEM_RESET_PORT 2			// PC4
-#define A64_MODEM_RESET_PIN 4
-#define A64_MODEM_APREADY_PORT 7		// PH7: low = host awake
-#define A64_MODEM_APREADY_PIN 7
-#define A64_MODEM_DISABLE_PORT 7		// PH8 (W_DISABLE#): low = RF enabled
-#define A64_MODEM_DISABLE_PIN 8
-#define A64_MODEM_STATUS_PORT 7			// PH9: input, low = the modem is on
-#define A64_MODEM_STATUS_PIN 9
-#define A64_MODEM_VBAT_PIN 7			// PL7 (R_PIO port 0): the modem's supply regulator enable
-#define A64_MODEM_UART_TX_PORT 3		// UART3 on PD0 / PD1, pin function 3
-#define A64_MODEM_UART_TX_PIN 0
-#define A64_MODEM_UART_RX_PORT 3
-#define A64_MODEM_UART_RX_PIN 1
-#define A64_MODEM_UART_PIN_FUNC 3
+// The modem (Quectel EG25-G): its pins come with the driver (modem-eg25/port/pinephone_modem_pins.h, from Apache NuttX).
 
 #endif

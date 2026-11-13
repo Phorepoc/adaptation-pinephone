@@ -3,8 +3,8 @@
 
 // phemodemtest.cpp -- OURS (2026-10-17, modem rung M1): is the EG25-G alive on
 // UART3? Opens RBusDevComm unit 3 (the "Comm.A64" PDD built with MODEM=1: opening it runs the kernel's bounded power-up
-// sequence, the modem's STATUS pin reads as KSignalDSR), waits for STATUS, probes "AT" until OK, runs ATI, AT+CPIN?,
-// AT+CSQ, AT+COPS?, then AT+QPOWD=1 and waits for STATUS to drop before closing (the close cuts VBAT only then).
+// sequence, the modem's STATUS pin reads as KSignalDSR), waits for STATUS, probes "AT" until OK, runs
+// the Zephyr EG2x-G init script, AT+CFUN=1, AT+CPIN?, AT+CSQ, AT+QENG, AT+COPS?, then AT+QPOWD=1 and waits for STATUS to drop before closing (the close cuts VBAT only then).
 // Every step is bounded. SSM_TEST=phemodemtest stages it as ssmtest.exe. Output: "PH: modem ..." lines.
 #include <e32base.h>
 #include <e32debug.h>
@@ -129,54 +129,24 @@ static TUint WaitUrcs(RBusDevComm& aPort, const TDesC8* const* aWant, TInt aCoun
 	return aSeen;
 	}
 
-// eg25-manager's boot config (data/pine64,pinephone-1.2.toml [at] configure, "query, set if different"), minus the
-// GNSS entries (no GPS rung yet). URCs go to all ports ("all") so the UART sees them too.
-struct TEnsure { const char* iQuery; const char* iExpect; const char* iSet; };
-static const TEnsure KEnsure[] =
+// The init script of Zephyr's EG2x-G driver (Apache-2.0; modem-eg25/third_party/zephyr/drivers/modem/
+// vendor_modem_cellular/cellular_quectel_eg2x_g.c, quectel_eg2x_g_init_chat_script_cmds), in its order, minus
+// AT+IFC=2,2 (only with hardware flow control, which UART3 does not have) and AT+CMUX (no multiplexer yet).
+// AT+CFUN=4 in Zephyr's script = RF off until its dial script sends AT+CFUN=1; done the same way here.
+static const char* const KZephyrInit[] =
 	{
-	{ "AT+QDAI?", "1,1,0,1,0,0,1,1", "AT+QDAI=1,1,0,1,0,0,1,1" },
-	{ "AT+QCFG=\"risignaltype\"", "\"physical\"", "AT+QCFG=\"risignaltype\",\"physical\"" },
-	{ "AT+QCFG=\"ims\"", "\"ims\",1", "AT+QCFG=\"ims\",1" },
-	{ "AT+QCFG=\"apready\"", "1,0,500", "AT+QCFG=\"apready\",1,0,500" },
-	{ "AT+QCFG=\"urc/ri/ring\"", "\"pulse\",120,1000,5000,\"off\",1", "AT+QCFG=\"urc/ri/ring\",\"pulse\",120,1000,5000,\"off\",1" },
-	{ "AT+QCFG=\"urc/ri/smsincoming\"", "\"pulse\",120,1", "AT+QCFG=\"urc/ri/smsincoming\",\"pulse\",120,1" },
-	{ "AT+QCFG=\"urc/ri/other\"", "\"off\",1,1", "AT+QCFG=\"urc/ri/other\",\"off\",1,1" },
-	{ "AT+QCFG=\"urc/delay\"", "\"urc/delay\",0", "AT+QCFG=\"urc/delay\",0" },
-	{ "AT+QCFG=\"urc/cache\"", "\"urc/cache\",0", "AT+QCFG=\"urc/cache\",0" },
-	{ "AT+QCFG=\"urc/ri/pin\"", "uart_ri", "AT+QCFG=\"urc/ri/pin\",uart_ri" },
-	{ "AT+QURCCFG=\"urcport\"", "\"all\"", "AT+QURCCFG=\"urcport\",\"all\"" },
-	{ NULL, NULL, "AT+QSCLK=1" },
-	{ "AT+QCFG=\"fast/poweroff\"", "\"fast/poweroff\",0", "AT+QCFG=\"fast/poweroff\",0" },
-	{ "AT+QCFG=\"sleepind/level\"", "\"sleepind/level\",0", "AT+QCFG=\"sleepind/level\",0" },
-	{ "AT+QCFG=\"wakeupin/level\"", "0,0", "AT+QCFG=\"wakeupin/level\",0,0" },
-	// (ApRstLevel / ModemRstLevel dropped: boot 983 ERROR on EG25GGBR07A08M2G, query and set; they only choose what a
-	// modem crash resets -- not needed for us)
+	"ATE0", "AT+CFUN=4", "AT+CMEE=1", "AT+CREG=1", "AT+CGREG=1", "AT+CEREG=1",
+	"AT+CREG?", "AT+CEREG?", "AT+CGREG?", "AT+CGSN", "AT+CGMM", "AT+CGMI", "AT+CGMR", "AT+CIMI",
 	};
 
-static void EnsureConfig(RBusDevComm& aPort)
+static TInt ZephyrInit(RBusDevComm& aPort)
 	{
-	TInt changed = 0, failed = 0;
-	TBuf8<1024> reply;
-	for (TUint i = 0; i < sizeof(KEnsure) / sizeof(KEnsure[0]); ++i)
-		{
-		const TEnsure& e = KEnsure[i];
-		if (e.iQuery)
-			{
-			const TPtrC8 q((const TUint8*)e.iQuery), x((const TUint8*)e.iExpect);
-			const TInt qr = Command(aPort, q, 3000, KNullDesC8, &reply);
-			if (qr == KErrNone && reply.FindF(x) >= 0)
-				continue;
-			if (qr != KErrNone)
-				{
-				RDebug::Printf("PH: modem config: %s not supported here (query ERROR), skipped", e.iQuery);
-				continue;
-				}
-			}
-		++changed;
-		if (Command(aPort, TPtrC8((const TUint8*)e.iSet), 3000) != KErrNone)
+	TInt failed = 0;
+	for (TUint i = 0; i < sizeof(KZephyrInit) / sizeof(KZephyrInit[0]); ++i)
+		if (Command(aPort, TPtrC8((const TUint8*)KZephyrInit[i]), 5000) != KErrNone)
 			++failed;
-		}
-	RDebug::Printf("PH: modem config ensured: %d set, %d failed", changed, failed);
+	RDebug::Printf("PH: modem Zephyr EG2x-G init script: %d of %d failed", failed, (TInt)(sizeof(KZephyrInit) / sizeof(KZephyrInit[0])));
+	return failed;
 	}
 
 static TBool StatusOn(RBusDevComm& aPort)	{ return (aPort.Signals() & KSignalDSR) != 0; }
@@ -232,22 +202,17 @@ GLDEF_C TInt E32Main()
 	RDebug::Printf("PH: modem AT %s after %d ms (urcs %x)", alive ? "OK" : "no answer", Ms(t0), seen);
 	if (alive)
 		{
-		Command(port, _L8("ATE0"), 2000);
-		Command(port, _L8("AT+CMEE=2"), 2000);
+		ZephyrInit(port);
 		if ((seen & 6) != 6)									// RDY came before we listened: give CFUN/CPIN 15 s more
 			seen = WaitUrcs(port, want, 3, 15000, seen | 1);
-		Command(port, _L8("ATI"), 3000);
+		Command(port, _L8("AT+CFUN=1"), 15000);		// Zephyr's dial script turns RF on this way
 		Command(port, _L8("AT+CPIN?"), 5000);
-		Command(port, _L8("AT+CSQ"), 3000);
-		Command(port, _L8("AT+CREG?"), 3000);
+		Command(port, _L8("AT+CSQ"), 3000);			// Zephyr's periodic script: CSQ + QENG serving cell
+		Command(port, _L8("AT+QENG=\"servingcell\""), 5000);
 		Command(port, _L8("AT+COPS?"), 10000);
 		// M5 call audio without a SIM: the codec route on (unit 3 DTR -> a64sound.cpp), the modem's own audio loop
 		// (AT+QAUDLOOP=1: its PCM uplink back to the downlink) -> speak into the bottom mic, hear it in the earpiece.
-		// AT+QDAI only takes effect after a modem restart: if "config ensured" set it this run, run the test again.
-		// boot 982: AT+QDAI? / AT+QSIDET / AT+QAUDLOOP=1 answered a bare ERROR (QAUDLOOP=0 OK) right after the
-		// AT block. Probes first (extended errors on; test forms; the generic audio commands; CFUN), then the audio
-		// commands retried every 5 s for up to 30 s in case the audio subsystem comes up later than RDY.
-		Command(port, _L8("AT+CMEE=2"), 2000);
+		// (read-only audio probes: the PCM settings are not changed by this test)
 		Command(port, _L8("AT+CMEE?"), 2000);
 		Command(port, _L8("AT+CFUN?"), 3000);
 		Command(port, _L8("AT+QDAI=?"), 3000);
@@ -265,7 +230,6 @@ GLDEF_C TInt E32Main()
 			dai = Command(port, _L8("AT+QDAI?"), 3000) == KErrNone;
 			RDebug::Printf("PH: modem audio probe %d: AT+QDAI? %s (%d ms after RDY wait)", i, dai ? "OK" : "ERROR", Ms(t0));
 			}
-		EnsureConfig(port);						// now: QDAI is only queryable once the audio subsystem is up
 		port.SetSignals(KSignalDTR, 0);
 		User::After(300000);
 		Command(port, _L8("AT+QSIDET=20000"), 3000);
