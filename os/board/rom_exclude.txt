@@ -1,0 +1,4 @@
+# Components the PinePhone board leaves out of its ROM (pdk tools/x32_rom_args.py reads this; one registry key per line).
+# The orientation channel comes from orientationssy over the accelerometer (ssya64); pheorientssy, the
+# screen-orientation-choice SSY of boards without one, would register the same channel
+pheorientssy
