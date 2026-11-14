@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // What the PinePhone gives the A64 drivers (a64_board.h in the SoC repository): the panel, the pins its LEDs,
 // vibrator, modem and touch controller are wired to, and the names it shows. A pin is a PIO port number (A = 0, B = 1,

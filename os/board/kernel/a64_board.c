@@ -1,5 +1,5 @@
 // Copyright The Phorepoc Authors
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 // The PinePhone's side of the A64 display driver (a64_board.h in the SoC repository): NuttX's PinePhone panel and
 // PMIC drivers (nuttx/, Apache-2.0, vendored unmodified) behind the board interface.

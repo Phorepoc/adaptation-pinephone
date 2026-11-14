@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # recipes/golden.sh -- the golden image ("phe image recipe golden -b pinephone", after "phe image recipe image"): slot A
 # of a development card, the text-shell ROM the phone falls back to when a slot B boot fails, and from which an image

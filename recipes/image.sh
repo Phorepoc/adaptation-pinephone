@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright The Phorepoc Authors
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
 
 # recipes/image.sh -- the PinePhone image ("phe image recipe image -b pinephone"). Runs on Linux inside the
 # toolchain container, after the ARM components are built (phe component build -A -arch arm -b pinephone).

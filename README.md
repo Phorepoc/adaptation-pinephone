@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://github.com/Phorepoc/adaptation-pinephone/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/Phorepoc/adaptation-pinephone?color=4591FF"></a>
-  <img alt="Licence: Apache 2.0 and EPL" src="https://img.shields.io/badge/licence-Apache%202.0%20%2B%20EPL-4591FF">
+  <img alt="Licence: EPL" src="https://img.shields.io/badge/licence-EPL--2.0%20%2F%20EPL--1.0-4591FF">
   <img alt="Device: PINE64 PinePhone" src="https://img.shields.io/badge/device-PINE64%20PinePhone-555">
   <img alt="Status: in development" src="https://img.shields.io/badge/status-in%20development-EF5500">
 </p>
@@ -87,7 +87,7 @@ At build time `os/` is laid over core's `os/`, so the paths line up with core's.
 
 ## Licence
 
-Code we wrote is Apache-2.0. Symbian files we've changed are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
+Code we wrote, and Symbian files we've changed, are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
 Symbian files we use unchanged stay EPL-1.0. The licence texts are in `LICENSES/`.
 
 The Realtek firmware in `os/board/bt/fw/` and `wlan/fw/` comes from linux-firmware, and can be redistributed under the
