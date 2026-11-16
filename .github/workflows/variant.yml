@@ -1,0 +1,28 @@
+# Copyright The Phorepoc Authors
+# SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+# variant.yml -- a test variant of the PinePhone image, run by hand: the same build as release.yml (the pdk's reusable
+# workflow, the commits board.lock pins) with KEY=VALUE pairs set for the image build, e.g. "MODEM=1" for the kernel
+# with the modem back end. Never released: the files are this run's artifact (phorepoc-pinephone).
+name: variant
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_env:
+        description: "KEY=VALUE pairs for the image build (e.g. MODEM=1)"
+        required: true
+        type: string
+
+concurrency:
+  group: variant
+  cancel-in-progress: false
+
+jobs:
+  image:
+    uses: Phorepoc/pdk/.github/workflows/board-image.yml@main
+    with:
+      build_env: ${{ inputs.build_env }}
+    permissions:
+      contents: write
+      packages: write
