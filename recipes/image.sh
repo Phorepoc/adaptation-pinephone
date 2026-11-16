@@ -84,7 +84,11 @@ export PATH="$V/bin:$PATH" KVIEW="$V"
 mkdir -p "$A/a53"; rm -rf "$V/.a53-build"; ln -s "$A/a53" "$V/.a53-build"
 # MODEM=1: the kernel link builds the modem power code from the modem-eg25 checkout among the board's repositories
 if [ "${MODEM:-0}" = 1 ] && [ -z "${MODEM_EG25:-}" ]; then
-  for d in $(echo "${PHOREPOC_ADAPTATIONS:-}" | tr : " "); do case "$d" in */modem-eg25) export MODEM_EG25="$d";; esac; done
+  # (in phe's container the repositories are mounted as /adapt/<n>; PHOREPOC_ADAPTATION_NAMES names them in order)
+  IFS=: read -r -a _dirs <<< "${PHOREPOC_ADAPTATIONS:-}"; IFS=: read -r -a _names <<< "${PHOREPOC_ADAPTATION_NAMES:-}"
+  for i in "${!_dirs[@]}"; do
+    n="${_names[$i]:-$(basename "${_dirs[$i]}")}"; [ "$n" = modem-eg25 ] && export MODEM_EG25="${_dirs[$i]}"
+  done
   [ -n "${MODEM_EG25:-}" ] || { echo "MODEM=1: no modem-eg25 among PHOREPOC_ADAPTATIONS (board.conf REPOS)" >&2; exit 1; }
   echo "modem back end: $MODEM_EG25"
 fi
