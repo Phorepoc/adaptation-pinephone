@@ -82,6 +82,12 @@ export PATH="$V/bin:$PATH" KVIEW="$V"
 [ -f "$A/a53/shim-ram-noprobe.bin" ] || [ -n "$(command -v aarch64-linux-gnu-gcc)" ] \
   || { echo "no entry shim in $A/a53: run the SoC's recipes/host/shim.sh on the host first" >&2; exit 1; }
 mkdir -p "$A/a53"; rm -rf "$V/.a53-build"; ln -s "$A/a53" "$V/.a53-build"
+# MODEM=1: the kernel link builds the modem power code from the modem-eg25 checkout among the board's repositories
+if [ "${MODEM:-0}" = 1 ] && [ -z "${MODEM_EG25:-}" ]; then
+  for d in $(echo "${PHOREPOC_ADAPTATIONS:-}" | tr : " "); do case "$d" in */modem-eg25) export MODEM_EG25="$d";; esac; done
+  [ -n "${MODEM_EG25:-}" ] || { echo "MODEM=1: no modem-eg25 among PHOREPOC_ADAPTATIONS (board.conf REPOS)" >&2; exit 1; }
+  echo "modem back end: $MODEM_EG25"
+fi
 echo "[4/5] kernel + ROM (build_ekern_rom.sh BOARD=a64 PHOREPOC=1 BOOT=ssm)"
 mkdir -p "$OUT"
 ( cd "$V" && PACKAGE=tools/phorepoc-arm/make_pinephone_image.sh BOARD=a64 SMP=1 MMODEL=flexible SECONDARY=efile PHOREPOC=1 BOOT=ssm ROM_ARCH=arm NGA="${NGA:-1}" \
