@@ -11,6 +11,8 @@ COMPONENTS = {
     "btprobe": dict(mmp=os.path.join(OS_ROOT, "src/btprobe/btprobe.mmp"), test=True),
     # CPIN/CSQ/COPS, AT+QPOWD; "PH: modem" lines. ARM_VFP=1 ./ph arm phemodemtest; MODEM=1 SSM_TEST=phemodemtest
     "phemodemtest": dict(mmp=os.path.join(OS_ROOT, "src/phemodemtest/phemodemtest.mmp"), test=True),
+    # modem step 3: the EG25-G AT port over USB (COMM::8..15 via RComm); MODEM=1 A64_USBHOST=1; started by hand
+    "phemodemusb": dict(mmp=os.path.join(OS_ROOT, "src/phemodemusb/phemodemusb.mmp"), test=True),
     # Bluetooth rung R2: powers the 2010 stack on (RBTPowerControl -> bt_v2.prt -> corehci -> hctl_h5) and reads BD_ADDR
     "btpower": dict(mmp=os.path.join(OS_ROOT, "src/btpower/btpower.mmp"), test=True),
     # Bluetooth rung R4: Bluetooth on through the S60 engine (CBTEngSettings -> btengsrv -> the stack), visible, named

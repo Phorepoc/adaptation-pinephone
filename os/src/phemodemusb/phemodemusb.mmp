@@ -1,0 +1,16 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+// phemodemusb.mmp -- OURS (modem step 3): the EG25-G's AT port over USB. Opens RBusDevComm unit 3 (powers the modem:
+// MODEM=1 kernel) and holds it, waits for the USB serial ports (COMM::8..15, A64_USBHOST=1), probes each with AT
+// through RComm (C32 + ECUART), powers the modem down. "PH: musb" lines. Started by hand (PhoneLab exec).
+TARGET			phemodemusb.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE70157F7
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			phemodemusb.cpp
+LIBRARY			euser.lib c32.lib
