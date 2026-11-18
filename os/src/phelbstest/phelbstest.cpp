@@ -98,7 +98,7 @@ static TInt EnsureGnssOff()
 	return state;
 	}
 
-GLDEF_C TInt E32Main()
+static TInt RunTest()
 	{
 	RDebug::Printf("PH: lbstest start");
 	RPositionServer srv;
@@ -172,4 +172,15 @@ GLDEF_C TInt E32Main()
 	const TBool pass = found && gotUpdate > 0 && g >= 0;
 	RDebug::Printf("PH: lbstest done (%s): %d update(s), %d partial", pass ? "PASS" : "FAIL", gotUpdate, partials);
 	return pass ? KErrNone : KErrGeneral;
+	}
+
+// the location API leaves and uses the cleanup stack (the earlier tests used none): install one, as every Symbian EXE does
+GLDEF_C TInt E32Main()
+	{
+	CTrapCleanup* cleanup = CTrapCleanup::New();
+	if (!cleanup)
+		return KErrNoMemory;
+	const TInt r = RunTest();
+	delete cleanup;
+	return r;
 	}
