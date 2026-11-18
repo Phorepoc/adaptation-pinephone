@@ -77,6 +77,9 @@ COMPONENTS = {
                        extra=[_BT + "src/Nmea/BTGPSNmeaParser.cpp", _BT + "src/BTGPSFix.cpp", _BT + "src/Utils/BTGPSNmeaBuffer.cpp"]),
     # the test: RPositionServer -> RPositioner on the serial PSY; SSM_TEST=phelbstest; module status + satellite counts, no coordinates
     "phelbstest": dict(mmp=os.path.join(OS_ROOT, "src/phelbstest/phelbstest.mmp"), test=True),
+    # pheltsy SIM rung: the SIM, registration, operator and signal through ETel / the licensee TSY (read-only; identifiers masked);
+    # SSM_TEST=phesimtest with MODEM=1 A64_USBHOST=1
+    "phesimtest": dict(mmp=os.path.join(OS_ROOT, "src/phesimtest/phesimtest.mmp"), test=True),
 }
 
 # core components that get this board's data (core registry: EXTEND)

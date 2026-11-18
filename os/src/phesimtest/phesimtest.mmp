@@ -1,0 +1,17 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+// phesimtest.mmp -- OURS (pheltsy SIM rung): the SIM, registration, operator and signal through the real ETel / CTSY path
+// (RMobilePhone), read-only: no call, no SMS, no data. "PH: simtest" lines; identifiers are logged as their last four digits.
+// SSM_TEST=phesimtest (MODEM=1 A64_USBHOST=1 kernel: the licensee TSY's AT engine drives the EG25-G).
+TARGET			phesimtest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7016C30
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			phesimtest.cpp
+
+LIBRARY			euser.lib etel.lib etelmm.lib
