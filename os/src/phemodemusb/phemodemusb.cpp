@@ -3,14 +3,12 @@
 
 // phemodemusb.cpp -- OURS (modem step 3): the EG25-G's AT port over USB (COMM::8..15 = the "Comm.USB" PDD, FreeBSD
 // ucom + u3g). Unit 3 (UART3) is opened only for its power-up and STATUS pin (RBusDevComm, MODEM=1 kernel) and held
-// to the end; the USB serial ports are used through RComm (C32 + ECUART), the way pheltsy will. Every wait is bounded.
+// to the end; the USB serial ports are used through RBusDevComm (C32 + ECUART), the way pheltsy will. Every wait is bounded.
 #include <e32base.h>
 #include <e32debug.h>
 #include <d32comm.h>
-#include <c32comm.h>
 
 _LIT(KLdd, "ECOMM");
-_LIT(KCsy, "ECUART");
 static const TInt KPowerUnit = 3;
 static const TInt KFirstUsb = 8;
 static const TInt KPorts = 8;
@@ -34,12 +32,12 @@ static void LogLines(const TDesC8& aText, TInt aUnit)
 		if (line.Length())
 			{
 			TBuf8<200> l(line.Left(Min(line.Length(), 199)));
-			RDebug::Printf("PH: musb COMM::%d << %S", aUnit, &l);
+			RDebug::Printf("PH: musb unit %d << %S", aUnit, &l);
 			}
 		}
 	}
 
-static TInt ReadFor(RComm& aPort, TDes8& aBuf, TInt aUs)
+static TInt ReadFor(RBusDevComm& aPort, TDes8& aBuf, TInt aUs)
 	{
 	TRequestStatus rs, ts;
 	RTimer t;
@@ -63,7 +61,7 @@ static TInt ReadFor(RComm& aPort, TDes8& aBuf, TInt aUs)
 	}
 
 // send aCmd + CR; collect the reply until OK / ERROR or aTimeoutMs; KErrNone on OK
-static TInt Command(RComm& aPort, TInt aUnit, const char* aCmd, TInt aTimeoutMs)
+static TInt Command(RBusDevComm& aPort, TInt aUnit, const char* aCmd, TInt aTimeoutMs)
 	{
 	TBuf8<64> cmd((const TUint8*)aCmd);
 	TBuf8<64> out(cmd);
@@ -71,7 +69,7 @@ static TInt Command(RComm& aPort, TInt aUnit, const char* aCmd, TInt aTimeoutMs)
 	TRequestStatus ws;
 	aPort.Write(ws, out);
 	User::WaitForRequest(ws);
-	RDebug::Printf("PH: musb COMM::%d >> %S (write %d)", aUnit, &cmd, ws.Int());
+	RDebug::Printf("PH: musb unit %d >> %S (write %d)", aUnit, &cmd, ws.Int());
 	TBuf8<1024> acc;
 	TBuf8<256> buf;
 	TTime t0; t0.UniversalTime();
@@ -93,7 +91,7 @@ static TInt Command(RComm& aPort, TInt aUnit, const char* aCmd, TInt aTimeoutMs)
 			{ r = KErrGeneral; break; }
 		}
 	LogLines(acc, aUnit);
-	RDebug::Printf("PH: musb COMM::%d %S -> %d after %d ms", aUnit, &cmd, r, Ms(t0));
+	RDebug::Printf("PH: musb unit %d %S -> %d after %d ms", aUnit, &cmd, r, Ms(t0));
 	return r;
 	}
 
@@ -114,16 +112,8 @@ GLDEF_C TInt E32Main()
 		User::After(100000);
 	RDebug::Printf("PH: musb STATUS %s after %d ms", on ? "on" : "still off", Ms(t0));
 
-	RCommServ srv;
-	r = srv.Connect();
-	RDebug::Printf("PH: musb RCommServ::Connect -> %d", r);
-	if (r == KErrNone)
-		{
-		r = srv.LoadCommModule(KCsy);
-		RDebug::Printf("PH: musb LoadCommModule(ECUART) -> %d", r);
-		}
 	TInt atUnit = -1;
-	if (r == KErrNone)
+	if (true)
 		{
 		// the EG25 enumerates 15-20 s after PWRKEY; the ports appear as the stack attaches them: poll COMM::8..15 for 120 s
 		TBool tried[KPorts] = { EFalse };
@@ -134,14 +124,12 @@ GLDEF_C TInt E32Main()
 				{
 				if (tried[i])
 					continue;
-				RComm c;
-				TBuf<16> name;
-				name.Format(_L("COMM::%d"), KFirstUsb + i);
-				TInt o = c.Open(srv, name, ECommExclusive);
+				RBusDevComm c;
+				TInt o = c.Open(KFirstUsb + i);
 				if (o != KErrNone)
 					continue;
 				tried[i] = ETrue;
-				RDebug::Printf("PH: musb COMM::%d opened after %d ms", KFirstUsb + i, Ms(w0));
+				RDebug::Printf("PH: musb unit %d opened after %d ms", KFirstUsb + i, Ms(w0));
 				TCommConfig cfg;
 				c.Config(cfg);
 				cfg().iRate = EBps115200;
@@ -151,13 +139,13 @@ GLDEF_C TInt E32Main()
 				cfg().iHandshake = 0;
 				cfg().iTerminatorCount = 0;
 				TInt sc = c.SetConfig(cfg);
-				RDebug::Printf("PH: musb COMM::%d SetConfig -> %d", KFirstUsb + i, sc);
+				RDebug::Printf("PH: musb unit %d SetConfig -> %d", KFirstUsb + i, sc);
 				TBool ok = EFalse;
 				for (TInt k = 0; k < 3 && !ok; ++k)
 					ok = Command(c, KFirstUsb + i, "AT", 2000) == KErrNone;
 				if (ok)
 					{
-					RDebug::Printf("PH: musb COMM::%d is an AT port", KFirstUsb + i);
+					RDebug::Printf("PH: musb unit %d is an AT port", KFirstUsb + i);
 					Command(c, KFirstUsb + i, "ATE0", 3000);
 					Command(c, KFirstUsb + i, "ATI", 3000);
 					Command(c, KFirstUsb + i, "AT+CGMM", 3000);
@@ -169,14 +157,13 @@ GLDEF_C TInt E32Main()
 					Command(c, atUnit, "AT+QPOWD=1", 5000);
 					}
 				else
-					RDebug::Printf("PH: musb COMM::%d: no AT answer", KFirstUsb + i);
+					RDebug::Printf("PH: musb unit %d: no AT answer", KFirstUsb + i);
 				c.Close();
 				}
 			User::After(500000);
 			}
 		RDebug::Printf("PH: musb AT port: %d (-1 = none within 120 s)", atUnit);
 		}
-	srv.Close();
 	// the close of unit 3 cuts VBAT: only after STATUS dropped (a clean power-down) -- or 30 s
 	TTime p0; p0.UniversalTime();
 	while (Ms(p0) < 30000 && (power.Signals() & KSignalDSR) != 0)
