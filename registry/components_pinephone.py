@@ -80,9 +80,6 @@ COMPONENTS = {
     # pheltsy SIM rung: the SIM, registration, operator and signal through ETel / the licensee TSY (read-only; identifiers masked);
     # SSM_TEST=phesimtest with MODEM=1 A64_USBHOST=1
     "phesimtest": dict(mmp=os.path.join(OS_ROOT, "src/phesimtest/phesimtest.mmp"), test=True),
-    # the status pane's universal indicator pane layout (bug-backlog "New-message indicator clipped"): run Z:\sysin\pheindprobe.exe
-    # from the ESHELL tty, the "PH: indprobe" lines give the slot rectangle AknIndicatorContainer computes
-    "pheindprobe": dict(mmp=os.path.join(OS_ROOT, "src/pheindprobe/pheindprobe.mmp")),
 }
 
 # core components that get this board's data (core registry: EXTEND)
