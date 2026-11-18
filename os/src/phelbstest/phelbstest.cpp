@@ -15,6 +15,7 @@
 #include <centralrepository.h>
 #include <ecom/ecom.h>
 #include <f32file.h>
+#include <featdiscovery.h>
 #include <lbs/epos_cposmodules.h>
 #include <lbs/epos_cposmoduleidlist.h>
 
@@ -193,7 +194,12 @@ static TInt RunTest()
 		RDebug::Printf("PH: lbstest RPositioner::Open(module) -> %d", r);
 		if (r == KErrNone)
 			{
-			pos.SetRequestor(CRequestor::ERequestorService, CRequestor::EFormatApplication, _L("phelbstest"));
+			const TInt reqr = pos.SetRequestor(CRequestor::ERequestorService, CRequestor::EFormatApplication, _L("phelbstest"));
+			// -21 (KErrAccessDenied) comes back from NotifyPositionUpdate in two cases: no requestor was accepted, or the
+			// location management feature is supported and self-locate is not allowed (network registration unknown)
+			TInt feat = -9;
+			TRAPD(fe, feat = CFeatureDiscovery::IsFeatureSupportedL(TUid::Uid(0x10279818)));
+			RDebug::Printf("PH: lbstest SetRequestor -> %d; feature KLocationManagement (0x10279818): %d (leave %d)", reqr, feat, fe);
 			TPositionUpdateOptions opts;
 			opts.SetUpdateInterval(TTimeIntervalMicroSeconds(0));
 			opts.SetUpdateTimeOut(TTimeIntervalMicroSeconds(25000000));
