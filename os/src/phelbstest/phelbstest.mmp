@@ -1,0 +1,16 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+// phelbstest.mmp -- OURS (GNSS rung 2): RPositionServer -> RPositioner on the serial NMEA PSY; module status and satellite
+// counts are logged ("PH: lbstest" lines), never a coordinate. SSM_TEST=phelbstest.
+TARGET			phelbstest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7016C22
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			phelbstest.cpp
+
+LIBRARY			euser.lib c32.lib lbs.lib centralrepository.lib ecom.lib efsrv.lib eposmodset.lib featdiscovery.lib
