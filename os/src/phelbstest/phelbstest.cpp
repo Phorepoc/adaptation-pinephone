@@ -159,6 +159,74 @@ static void Diag()
 	}
 	}
 
+// more of the client API against the PSY, codes and counts only: tracking (5 updates at a 1 s interval), a cancelled request,
+// two positioners on one module at once, and the last known position (the location monitor's database; no fix yet)
+static void MoreRounds(RPositionServer& aSrv, RPositioner& aPos, TPositionUpdateOptions& aOpts, TInt& aOk)
+	{
+	// tracking
+	aOpts.SetUpdateInterval(TTimeIntervalMicroSeconds(1000000));
+	const TInt so = aPos.SetUpdateOptions(aOpts);
+	TInt tracked = 0;
+	TTime prev; prev.UniversalTime();
+	for (TInt k = 0; k < 5; ++k)
+		{
+		TPositionSatelliteInfo s;
+		TRequestStatus rs;
+		aPos.NotifyPositionUpdate(s, rs);
+		User::WaitForRequest(rs);
+		RDebug::Printf("PH: lbstest tracking %d: status %d after %d ms", k, rs.Int(), Ms(prev));
+		prev.UniversalTime();
+		if (rs.Int() == KPositionPartialUpdate || rs.Int() == KErrNone)
+			++tracked;
+		}
+	RDebug::Printf("PH: lbstest tracking (SetUpdateOptions %d): %d of 5 updates", so, tracked);
+	if (tracked == 5)
+		++aOk;
+	// a request cancelled while pending
+	{
+	TPositionSatelliteInfo s;
+	TRequestStatus rs;
+	aPos.NotifyPositionUpdate(s, rs);
+	const TInt c = aPos.CancelRequest(RPositioner::EReqNotifyPositionUpdate);
+	User::WaitForRequest(rs);
+	RDebug::Printf("PH: lbstest cancel: CancelRequest -> %d, the request completed with %d (KErrCancel = %d; a set that raced it is also fine)", c, rs.Int(), KErrCancel);
+	if (rs.Int() == KErrCancel || rs.Int() == KPositionPartialUpdate || rs.Int() == KErrNone)
+		++aOk;
+	}
+	// two positioners at once
+	{
+	RPositioner p2;
+	TInt r = p2.Open(aSrv, KPheModule);
+	if (r == KErrNone)
+		{
+		p2.SetRequestor(CRequestor::ERequestorService, CRequestor::EFormatApplication, _L("phelbstest2"));
+		p2.SetUpdateOptions(aOpts);
+		TPositionSatelliteInfo s1, s2;
+		TRequestStatus r1, r2;
+		aPos.NotifyPositionUpdate(s1, r1);
+		p2.NotifyPositionUpdate(s2, r2);
+		User::WaitForRequest(r1);
+		User::WaitForRequest(r2);
+		RDebug::Printf("PH: lbstest two positioners: statuses %d and %d", r1.Int(), r2.Int());
+		if ((r1.Int() == KPositionPartialUpdate || r1.Int() == KErrNone) && (r2.Int() == KPositionPartialUpdate || r2.Int() == KErrNone))
+			++aOk;
+		p2.Close();
+		}
+	else
+		RDebug::Printf("PH: lbstest second RPositioner::Open -> %d", r);
+	}
+	// the last known position (answered by the location monitor; no coordinate is read)
+	{
+	TPositionInfo li;
+	TRequestStatus rs;
+	aPos.GetLastKnownPosition(li, rs);
+	User::WaitForRequest(rs);
+	RDebug::Printf("PH: lbstest GetLastKnownPosition -> %d (KErrUnknown = %d: nothing stored yet)", rs.Int(), KErrUnknown);
+	if (rs.Int() == KErrUnknown || rs.Int() == KErrNone)
+		++aOk;
+	}
+	}
+
 static TInt RunTest()
 	{
 	RDebug::Printf("PH: lbstest start");
@@ -180,13 +248,13 @@ static TInt RunTest()
 			continue;
 		TBuf<KPositionMaxModuleName> name;
 		info.GetModuleName(name);
-		RDebug::Printf("PH: lbstest module %d: id 0x%08x '%S' available %d", (TInt)i, info.ModuleId().iUid, &name, (TInt)info.IsAvailable());
+		RDebug::Print(_L("PH: lbstest module %d: id 0x%08x name %S available %d"), (TInt)i, info.ModuleId().iUid, &name, (TInt)info.IsAvailable());
 		if (info.ModuleId() == KPheModule)
 			found = ETrue;
 		}
 	RDebug::Printf("PH: lbstest the serial NMEA module %s", found ? "is listed" : "is NOT listed");
 
-	TInt gotUpdate = 0, partials = 0;
+	TInt gotUpdate = 0, partials = 0, extraOk = 0;
 	if (found)
 		{
 		RPositioner pos;
@@ -229,6 +297,8 @@ static TInt RunTest()
 								   (TInt)sat.NumSatellitesInView(), (TInt)sat.NumSatellitesUsed(), (TInt)sat.PositionClassType());
 					}
 				}
+			if (gotUpdate > 0)
+				MoreRounds(srv, pos, opts, extraOk);
 			pos.Close();
 			}
 		}
@@ -236,7 +306,8 @@ static TInt RunTest()
 	User::After(3000000);			// the server drops the module after its last session: GNSS is switched off then
 	const TInt g = EnsureGnssOff();
 	RDebug::Printf("PH: lbstest GNSS after the test: %s", g == 0 ? "off (the PSY switched it off)" : g == 2 ? "was still on, switched off here" : "state unknown");
-	const TBool pass = found && gotUpdate > 0 && g >= 0;
+	RDebug::Printf("PH: lbstest extra checks passed: %d of 4 (tracking, cancel, two positioners, last known)", extraOk);
+	const TBool pass = found && gotUpdate > 0 && g >= 0 && extraOk == 4;
 	RDebug::Printf("PH: lbstest done (%s): %d update(s), %d partial", pass ? "PASS" : "FAIL", gotUpdate, partials);
 	return pass ? KErrNone : KErrGeneral;
 	}
