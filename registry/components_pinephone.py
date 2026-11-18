@@ -63,6 +63,12 @@ COMPONENTS = {
     "lbsnetregstatusint": dict(mmp=_L + "locationmgmt/locationcore/LbsNetRegStatusInt/group/lbsnetregstatusint.mmp", test=_LBS_TEST),
     "lbspartnercommon": dict(mmp=_L + "locationmgmt/locationcore/LbsPartnerCommon/group/lbspartnercommon.mmp", test=_LBS_TEST),
     "lbsrootapi": dict(mmp=_L + "locationmgmt/locationcore/lbsrootapi/group/lbsrootapi.mmp", test=_LBS_TEST),
+    # the location monitor: eposserver's start-up connects to it at once (CPosLocMonitorReqHandlerHub::ConstructL ->
+    # RLbsLocMonitorSession::Connect -> RSecureSessionBase::StartServer of locationmonitor.exe); without it the server left KErrNotFound
+    "locationmonitor": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorserver/group/lbslocationmonitor.mmp", test=_LBS_TEST),
+    "lbslocationinfoconverterplugin": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/ConversionApi/ConversionPluginApi/group/lbslocationinfoconverterplugin.mmp",
+                                           test=_LBS_TEST,
+                                           rom_data=[r"private\10202be9\20026814.txt=baseline/symbian-2010/" + _L + "locationmgmt/locmonitor/lbslocmonitorapis/cenrep/20026814.txt"]),
     # OURS: the serial NMEA PSY = the Bluetooth GPS PSY's real NMEA parser / fix / buffer with the Bluetooth transport
     # replaced by RComm on the modem's NMEA port, GNSS on/off over the second AT port (src/phenmeapsy)
     "phenmeapsy": dict(mmp=os.path.join(OS_ROOT, "src/phenmeapsy/phenmeapsy.mmp"), test=_LBS_TEST, arm_incs_first=True,
