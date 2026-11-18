@@ -80,6 +80,9 @@ COMPONENTS = {
     # pheltsy SIM rung: the SIM, registration, operator and signal through ETel / the licensee TSY (read-only; identifiers masked);
     # SSM_TEST=phesimtest with MODEM=1 A64_USBHOST=1
     "phesimtest": dict(mmp=os.path.join(OS_ROOT, "src/phesimtest/phesimtest.mmp"), test=True),
+    # the status pane's universal indicator pane layout (bug-backlog "New-message indicator clipped"): run pheindprobe.exe from Z: sys/bin
+    # from the ESHELL tty, the "PH: indprobe" lines give the slot rectangle AknIndicatorContainer computes
+    "pheindprobe": dict(mmp=os.path.join(OS_ROOT, "src/pheindprobe/pheindprobe.mmp")),
 }
 
 # core components that get this board's data (core registry: EXTEND)
@@ -88,6 +91,7 @@ EXTEND = {
     "catalogue_get": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pinephone.txt"]),
     # pheltsy, the AT engine of the licensee TSY (core toolchain/shims/licenseetsy_board/pheltsy_at.h): compiled into this
     # board's licenseetsy.dll. It takes over from the fake modem only when the modem power unit (Comm unit 3, the MODEM=1
-    # kernel) opens; otherwise the scripted values stay
-    "licenseetsy": dict(defs=["PHE_LTSY"]),
+    # kernel) opens; otherwise the scripted values stay. PHE_LTSY_SMS: the messages go the normal Symbian way (new ones stored by
+    # the modem and read, then deleted, by the engine; delivery reports as +CDS; TP-SRR on submit)
+    "licenseetsy": dict(defs=["PHE_LTSY", "PHE_LTSY_SMS"]),
 }
