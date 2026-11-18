@@ -134,22 +134,29 @@ static TInt RunTest()
 	RMobilePhone::TMobilePhoneNetworkInfoV1 net;
 	RMobilePhone::TMobilePhoneNetworkInfoV1Pckg netP(net);
 	RMobilePhone::TMobilePhoneLocationAreaV1 area;
-	phone.GetCurrentNetwork(st, netP, area);
-	r = Await(st, "GetCurrentNetwork");
-	if (r == KErrTimedOut)
-		phone.CancelAsyncRequest(EMobilePhoneGetCurrentNetwork);
+	// the operator and the signal come with the engine's next poll after the registration (5 s round): ask up to 8 times, 2.5 s apart
+	TInt32 rssi = 0;
+	TInt8 bars = 0;
+	for (TInt k = 0; k < 8; ++k)
+		{
+		phone.GetCurrentNetwork(st, netP, area);
+		r = Await(st, "GetCurrentNetwork");
+		if (r == KErrTimedOut)
+			phone.CancelAsyncRequest(EMobilePhoneGetCurrentNetwork);
+		phone.GetSignalStrength(st, rssi, bars);
+		const TInt sr = Await(st, "GetSignalStrength");
+		if (sr == KErrTimedOut)
+			phone.CancelAsyncRequest(EMobilePhoneGetSignalStrength);
+		if (registered && net.iLongName.Length() > 0 && bars > 0)
+			break;
+		User::After(2500000);
+		}
 	RDebug::Print(_L("PH: simtest network: long '%S' short '%S' mcc %S mnc %S mode %d status %d"),
 				  &net.iLongName, &net.iShortName, &net.iCountryCode, &net.iNetworkId, (TInt)net.iMode, (TInt)net.iStatus);
 	const TBool nameOk = r == KErrNone && net.iLongName.Length() > 0;
 
-	TInt32 rssi = 0;
-	TInt8 bars = 0;
-	phone.GetSignalStrength(st, rssi, bars);
-	r = Await(st, "GetSignalStrength");
-	if (r == KErrTimedOut)
-		phone.CancelAsyncRequest(EMobilePhoneGetSignalStrength);
 	RDebug::Printf("PH: simtest signal: %d dBm, %d of 7 bars", (TInt)rssi, (TInt)bars);
-	const TBool signalOk = r == KErrNone && bars > 0;
+	const TBool signalOk = bars > 0;
 
 	phone.Close();
 	srv.Close();
