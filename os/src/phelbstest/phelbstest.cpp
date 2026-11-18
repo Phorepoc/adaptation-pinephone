@@ -12,6 +12,11 @@
 #include <c32comm.h>
 #include <lbs.h>
 #include <lbssatellite.h>
+#include <centralrepository.h>
+#include <ecom/ecom.h>
+#include <f32file.h>
+#include <lbs/epos_cposmodules.h>
+#include <lbs/epos_cposmoduleidlist.h>
 
 static const TPositionModuleId KPheModule = { 0xE7016C20 };
 static const TInt KRounds = 6;				// up to 6 requests of 25 s: the modem enumerates 15-20 s after power-up
@@ -98,9 +103,65 @@ static TInt EnsureGnssOff()
 	return state;
 	}
 
+
+// where does the server's start-up leave KErrNotFound? The same steps as CPosServer::ConstructL, one by one, logged
+static void Diag()
+	{
+	const TUint32 repos[] = { 0x101f500c, 0x10282266, 0x1028224b, 0xE7016C20 };
+	for (TInt i = 0; i < 4; ++i)
+		{
+		TRAPD(e, { CRepository* r = CRepository::NewL(TUid::Uid(repos[i])); delete r; });
+		RDebug::Printf("PH: lbstest diag CenRep 0x%08x -> %d", repos[i], e);
+		}
+	{
+	TInt n = -1, ge = -1;
+	TRAP(ge, {
+		CRepository* r = CRepository::NewL(TUid::Uid(0x101f500c));
+		CleanupStack::PushL(r);
+		TBuf<128> v;
+		ge = r->Get(1, v);
+		n = v.Length();
+		CleanupStack::PopAndDestroy(r);
+		});
+	RDebug::Printf("PH: lbstest diag 0x101f500c key 1: %d, %d chars", ge, n);
+	}
+	{
+	RImplInfoPtrArray impls;
+	TRAPD(e, REComSession::ListImplementationsL(TUid::Uid(0x101f7a7c), impls));
+	RDebug::Printf("PH: lbstest diag ECOM PSY interface 0x101f7a7c -> %d, %d implementation(s)", e, impls.Count());
+	for (TInt i = 0; i < impls.Count(); ++i)
+		RDebug::Printf("PH: lbstest diag   impl 0x%08x rom %d", impls[i]->ImplementationUid().iUid, (TInt)impls[i]->RomBased());
+	impls.ResetAndDestroy();
+	REComSession::FinalClose();
+	}
+	{
+	RFs fs;
+	TInt e = fs.Connect();
+	TEntry ent;
+	if (e == KErrNone)
+		e = fs.Entry(_L("z:\\private\\101F97B2\\eposserver.rsc"), ent);
+	RDebug::Printf("PH: lbstest diag eposserver.rsc on Z: -> %d", e);
+	fs.Close();
+	}
+	{
+	TInt inst = -1, vis = -1;
+	TRAPD(e, {
+		CPosModules* m = CPosModules::OpenL();
+		CleanupStack::PushL(m);
+		inst = m->IsModuleInstalled(KPheModule);
+		TRAPD(ve, vis = m->IsModuleVisibleL(KPheModule));
+		(void) ve;
+		CleanupStack::PopAndDestroy(m);
+		});
+	RDebug::Printf("PH: lbstest diag CPosModules::OpenL -> %d, module installed %d visible %d", e, inst, vis);
+	REComSession::FinalClose();
+	}
+	}
+
 static TInt RunTest()
 	{
 	RDebug::Printf("PH: lbstest start");
+	Diag();
 	RPositionServer srv;
 	TInt r = srv.Connect();
 	RDebug::Printf("PH: lbstest RPositionServer::Connect -> %d", r);

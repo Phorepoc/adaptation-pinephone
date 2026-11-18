@@ -13,4 +13,4 @@ OS_LAYER_SYSTEMINCLUDE
 SOURCEPATH		.
 SOURCE			phelbstest.cpp
 
-LIBRARY			euser.lib c32.lib lbs.lib
+LIBRARY			euser.lib c32.lib lbs.lib centralrepository.lib ecom.lib efsrv.lib eposmodset.lib
