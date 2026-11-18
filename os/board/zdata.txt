@@ -2,6 +2,7 @@
 # Bluetooth HCI plug-ins (hctl_h5 + the Realtek initialisor) on UART1
 private/101f7989/bluetooth/corehci_symbian.ini = board/bt/corehci_symbian.ini
 private/101f7989/bluetooth/hctl_h5.ini = board/bt/hctl_h5.ini
+private/101f7989/bluetooth/pheblerouter.ini = board/bt/pheblerouter.ini
 private/101f7989/bluetooth/initialisor_rtl.ini = board/bt/initialisor_rtl.ini
 # the RTL8723CS firmware (linux-firmware's, unmodified, with Realtek's notice)
 private/101f7989/bluetooth/rtl8723cs_xx_fw.bin = board/bt/fw/rtl8723cs_xx_fw.bin
