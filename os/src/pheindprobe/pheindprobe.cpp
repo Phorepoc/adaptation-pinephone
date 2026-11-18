@@ -23,10 +23,8 @@ static void Rect(const char* aWhat, TInt aVariety, const TAknWindowLineLayout& a
 
 static void ProbeL()
 	{
-	CCoeEnv* env = new (ELeave) CCoeEnv;
-	env->ConstructL();
-	const TSize scr(env->ScreenDevice()->SizeInPixels());
-	RDebug::Printf("PH: indprobe screen %d x %d", scr.iWidth, scr.iHeight);
+	// no CCoeEnv: ConstructL of a bare one panicked E32USER-CBase 66 (a cleanup-stack push with no TRAP in force) on the phone;
+	// the CDL layout tables are plain data and are tried without an environment
 	const TRect pane(0, 0, 80, 19);
 	for (TInt v = 0; v < 2; ++v)
 		{
@@ -41,7 +39,6 @@ static void ProbeL()
 			RDebug::Printf("PH: indprobe uni_indicator_pane_g1(%d) left %d", v, e);
 		}
 	RDebug::Printf("PH: indprobe done");
-	delete env;
 	}
 
 TInt E32Main()
