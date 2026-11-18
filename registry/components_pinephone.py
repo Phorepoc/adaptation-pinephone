@@ -36,4 +36,8 @@ COMPONENTS = {
 EXTEND = {
     # the download app's device identity (board + architecture): it shows only what fits this board (the catalogue layer)
     "catalogue_get": dict(rom_data=[r"resource\phorepoc\device.txt=data/phorepoc/device_pinephone.txt"]),
+    # pheltsy, the AT engine of the licensee TSY (core toolchain/shims/licenseetsy_board/pheltsy_at.h): compiled into this
+    # board's licenseetsy.dll. It takes over from the fake modem only when the modem power unit (Comm unit 3, the MODEM=1
+    # kernel) opens; otherwise the scripted values stay
+    "licenseetsy": dict(defs=["PHE_LTSY"]),
 }
