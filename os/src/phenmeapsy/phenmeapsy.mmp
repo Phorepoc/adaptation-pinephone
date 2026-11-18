@@ -1,0 +1,24 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+// phenmeapsy.mmp -- OURS (GNSS rung 2): the serial NMEA positioning module for the 2010 location server (module id
+// 0xE7016C20). The registry entry (components_pinephone.py) adds the real Bluetooth GPS PSY's BTGPSNmeaParser, BTGPSFix and
+// BTGPSNmeaBuffer sources and their include directories.
+TARGET			phenmeapsy.dll
+TARGETTYPE		PLUGIN
+UID				0x10009D8D 0xE7016C21
+VENDORID		0
+CAPABILITY		ALL -TCB
+
+OS_LAYER_SYSTEMINCLUDE
+
+START RESOURCE	e7016c21.rss
+TARGET			phenmeapsy.rsc
+END
+
+SOURCEPATH		.
+SOURCE			phenmeapsy.cpp
+
+LIBRARY			euser.lib c32.lib
+LIBRARY			lbs.lib epospluginfw.lib
+LIBRARY			estor.lib bafl.lib efsrv.lib inetprotutil.lib

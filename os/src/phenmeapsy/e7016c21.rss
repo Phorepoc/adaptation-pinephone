@@ -1,0 +1,27 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+// ECOM registration of the serial NMEA PSY: implementation of the location server's PSY interface (0x101f7a7c)
+NAME PHNM
+#include <ecom/registryinfo.rh>
+
+RESOURCE REGISTRY_INFO r_phenmeapsy_reginfo
+	{
+	dll_uid = 0xE7016C21;
+	interfaces =
+		{
+		INTERFACE_INFO
+			{
+			interface_uid = 0x101f7a7c;
+			implementations =
+				{
+				IMPLEMENTATION_INFO
+					{
+					implementation_uid = 0xE7016C20;
+					version_no = 1;
+					display_name = "Modem GNSS (NMEA)";
+					}
+				};
+			}
+		};
+	}
