@@ -65,7 +65,9 @@ COMPONENTS = {
     "lbsrootapi": dict(mmp=_L + "locationmgmt/locationcore/lbsrootapi/group/lbsrootapi.mmp", test=_LBS_TEST),
     # the location monitor: eposserver's start-up connects to it at once (CPosLocMonitorReqHandlerHub::ConstructL ->
     # RLbsLocMonitorSession::Connect -> RSecureSessionBase::StartServer of locationmonitor.exe); without it the server left KErrNotFound
-    "locationmonitor": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorserver/group/lbslocationmonitor.mmp", test=_LBS_TEST),
+    "locationmonitor": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorserver/group/lbslocationmonitor.mmp", test=_LBS_TEST,
+                        arm_incs_first=True,   # <elements/cftransportmacro.h> (etel -> metadata.h) is not exported: os/src/lbsshim forwards to the real one
+                        incs_first=["src/lbsshim", "baseline/symbian-2010/oss.FCL.sf.os.commsfw/commsfwsupport/commselements/group"]),
     "lbslocationinfoconverterplugin": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/ConversionApi/ConversionPluginApi/group/lbslocationinfoconverterplugin.mmp",
                                            test=_LBS_TEST,
                                            rom_data=[r"private\10202be9\20026814.txt=baseline/symbian-2010/" + _L + "locationmgmt/locmonitor/lbslocmonitorapis/cenrep/20026814.txt"]),

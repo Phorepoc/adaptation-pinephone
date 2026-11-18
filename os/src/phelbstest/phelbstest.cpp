@@ -241,7 +241,12 @@ GLDEF_C TInt E32Main()
 	CTrapCleanup* cleanup = CTrapCleanup::New();
 	if (!cleanup)
 		return KErrNoMemory;
+	// the modules API (CPosModules) uses active objects: an active scheduler too (E32USER-CBase 44 without one)
+	CActiveScheduler* scheduler = new CActiveScheduler;
+	if (scheduler)
+		CActiveScheduler::Install(scheduler);
 	const TInt r = RunTest();
+	delete scheduler;
 	delete cleanup;
 	return r;
 	}
