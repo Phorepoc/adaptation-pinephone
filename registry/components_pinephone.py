@@ -8,8 +8,6 @@ import os
 from paths import OS_ROOT  # noqa: F401
 
 _L = "oss.FCL.sf.os.lbs/"
-# the location stack ships only in an image built with SSM_TEST=phelbstest (build_env cannot carry a comma list: ROM_TAIL)
-_LBS_TEST = os.environ.get("SSM_TEST") != "phelbstest"
 _BT = "baseline/symbian-2010/oss.FCL.sf.os.lbs/datasourcemodules/bluetoothgpspositioningmodule/btgpspsy/"
 
 COMPONENTS = {
@@ -38,42 +36,42 @@ COMPONENTS = {
     # OURS (R3): the Realtek initialisor = the firmware patch download + the 1.5 Mbaud switch (src/initialisor_rtl)
     "initialisor_rtl": dict(mmp=os.path.join(OS_ROOT, "src/initialisor_rtl/group/initialisor_rtl.mmp")),
     # ---- GNSS rung 2: the 2010 location stack (oss.FCL.sf.os.lbs, the real mmps) + a serial NMEA PSY ----------------------
-    # All test components unless SSM_TEST=phelbstest (a variant): the release image is unchanged. The
+    # Normal components of the image (they are only started on demand: a client's RPositionServer::Connect starts eposserver, which starts the
+    # location monitor; nothing runs at boot). The
     # modules repository (CenRep 0x101f500c) lists the PSY; the PSY's own repository (its implementation UID) holds its
     # properties; the LBS settings repositories are the real binary .cre files of the package.
-    "eposserver": dict(mmp=_L + "locationrequestmgmt/locationserver/group/EPos_Server.mmp", test=_LBS_TEST),
-    "epospluginfw": dict(mmp=_L + "datasourceadaptation/gpsdatasourceadaptation/group/EPos_PluginFw.mmp", test=_LBS_TEST,
+    "eposserver": dict(mmp=_L + "locationrequestmgmt/locationserver/group/EPos_Server.mmp"),
+    "epospluginfw": dict(mmp=_L + "datasourceadaptation/gpsdatasourceadaptation/group/EPos_PluginFw.mmp",
                          x32_flags=["-DPORT_FOFF_DYNAMIC"]),   # CPositioner::NewL: static_cast<TInt32> _FOFF(..) (the run-time pointer form)
-    "eposmodset": dict(mmp=_L + "locationmgmt/locationcore/lbslocsettings/group/EPos_LocationSettings.mmp", test=_LBS_TEST,
+    "eposmodset": dict(mmp=_L + "locationmgmt/locationcore/lbslocsettings/group/EPos_LocationSettings.mmp",
                        rom_data=[r"private\10202be9\101f500c.txt=data/lbs/101f500c.txt",
                                  r"private\10202be9\e7016c20.txt=data/lbs/e7016c20.txt"]),
-    "eposutils": dict(mmp=_L + "locationmgmt/locationcore/lbsmlfwutilities/group/EPos_Utils.mmp", test=_LBS_TEST),
-    "lbsadmin": dict(mmp=_L + "locationmgmt/locationcore/group/lbsadmin.mmp", test=_LBS_TEST,
+    "eposutils": dict(mmp=_L + "locationmgmt/locationcore/lbsmlfwutilities/group/EPos_Utils.mmp"),
+    "lbsadmin": dict(mmp=_L + "locationmgmt/locationcore/group/lbsadmin.mmp",
                      rom_data=[r"private\10202be9\1028224b.cre=baseline/symbian-2010/" + _L + "locationmgmt/locationcore/group/1028224B.cre"]),
-    "lbsassistancedata": dict(mmp=_L + "locationmgmt/locationcore/LbsAssistanceData/group/LbsAssistanceData.mmp", test=_LBS_TEST),
-    "lbscommoninternaldatatypes": dict(mmp=_L + "locationmgmt/locationcore/LbsCommonInternalDataTypes/group/lbscommoninternaldatatypes.mmp", test=_LBS_TEST),
-    "lbsinternalapi": dict(mmp=_L + "locationmgmt/locationcore/LbsInternalApi/group/LbsInternalApi.mmp", test=_LBS_TEST,
+    "lbsassistancedata": dict(mmp=_L + "locationmgmt/locationcore/LbsAssistanceData/group/LbsAssistanceData.mmp"),
+    "lbscommoninternaldatatypes": dict(mmp=_L + "locationmgmt/locationcore/LbsCommonInternalDataTypes/group/lbscommoninternaldatatypes.mmp"),
+    "lbsinternalapi": dict(mmp=_L + "locationmgmt/locationcore/LbsInternalApi/group/LbsInternalApi.mmp",
                            rom_data=[r"private\10202be9\10282266.cre=baseline/symbian-2010/" + _L + "locationmgmt/locationcore/lbsroot/group/10282266.cre"]),
-    "lbslocationinfodatatypes": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/ConversionDataTypes/group/lbslocationinfodatatypes.mmp", test=_LBS_TEST),
-    "lbsloccommon": dict(mmp=_L + "locationmgmt/locationcore/LbsLocCommon/group/LbsLocCommon.mmp", test=_LBS_TEST),
-    "lbslocdatasource": dict(mmp=_L + "locationmgmt/locationcore/LbsLocDataSource/group/LbsLocDataSource.mmp", test=_LBS_TEST),
-    "lbslocmonclient": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/CommonClientServerApi/group/lbslocmonclient.mmp", test=_LBS_TEST),
-    "lbsnetinternalapi": dict(mmp=_L + "locationmgmt/locationcore/LbsNetInternalApi/group/lbsnetinternalapi.mmp", test=_LBS_TEST),
-    "lbsnetprotocol": dict(mmp=_L + "locationmgmt/locationcore/LbsNetProtocol/group/lbsnetprotocol.mmp", test=_LBS_TEST),
-    "lbsnetregstatusint": dict(mmp=_L + "locationmgmt/locationcore/LbsNetRegStatusInt/group/lbsnetregstatusint.mmp", test=_LBS_TEST),
-    "lbspartnercommon": dict(mmp=_L + "locationmgmt/locationcore/LbsPartnerCommon/group/lbspartnercommon.mmp", test=_LBS_TEST),
-    "lbsrootapi": dict(mmp=_L + "locationmgmt/locationcore/lbsrootapi/group/lbsrootapi.mmp", test=_LBS_TEST),
+    "lbslocationinfodatatypes": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/ConversionDataTypes/group/lbslocationinfodatatypes.mmp"),
+    "lbsloccommon": dict(mmp=_L + "locationmgmt/locationcore/LbsLocCommon/group/LbsLocCommon.mmp"),
+    "lbslocdatasource": dict(mmp=_L + "locationmgmt/locationcore/LbsLocDataSource/group/LbsLocDataSource.mmp"),
+    "lbslocmonclient": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/CommonClientServerApi/group/lbslocmonclient.mmp"),
+    "lbsnetinternalapi": dict(mmp=_L + "locationmgmt/locationcore/LbsNetInternalApi/group/lbsnetinternalapi.mmp"),
+    "lbsnetprotocol": dict(mmp=_L + "locationmgmt/locationcore/LbsNetProtocol/group/lbsnetprotocol.mmp"),
+    "lbsnetregstatusint": dict(mmp=_L + "locationmgmt/locationcore/LbsNetRegStatusInt/group/lbsnetregstatusint.mmp"),
+    "lbspartnercommon": dict(mmp=_L + "locationmgmt/locationcore/LbsPartnerCommon/group/lbspartnercommon.mmp"),
+    "lbsrootapi": dict(mmp=_L + "locationmgmt/locationcore/lbsrootapi/group/lbsrootapi.mmp"),
     # the location monitor: eposserver's start-up connects to it at once (CPosLocMonitorReqHandlerHub::ConstructL ->
     # RLbsLocMonitorSession::Connect -> RSecureSessionBase::StartServer of locationmonitor.exe); without it the server left KErrNotFound
-    "locationmonitor": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorserver/group/lbslocationmonitor.mmp", test=_LBS_TEST,
+    "locationmonitor": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorserver/group/lbslocationmonitor.mmp",
                         arm_incs_first=True,   # <elements/cftransportmacro.h> (etel -> metadata.h) is not exported: os/src/lbsshim forwards to the real one
                         incs_first=["src/lbsshim", "baseline/symbian-2010/oss.FCL.sf.os.commsfw/commsfwsupport/commselements/group"]),
     "lbslocationinfoconverterplugin": dict(mmp=_L + "locationmgmt/locmonitor/lbslocmonitorapis/ConversionApi/ConversionPluginApi/group/lbslocationinfoconverterplugin.mmp",
-                                           test=_LBS_TEST,
                                            rom_data=[r"private\10202be9\20026814.txt=baseline/symbian-2010/" + _L + "locationmgmt/locmonitor/lbslocmonitorapis/cenrep/20026814.txt"]),
     # OURS: the serial NMEA PSY = the Bluetooth GPS PSY's real NMEA parser / fix / buffer with the Bluetooth transport
     # replaced by RComm on the modem's NMEA port, GNSS on/off over the second AT port (src/phenmeapsy)
-    "phenmeapsy": dict(mmp=os.path.join(OS_ROOT, "src/phenmeapsy/phenmeapsy.mmp"), test=_LBS_TEST, arm_incs_first=True,
+    "phenmeapsy": dict(mmp=os.path.join(OS_ROOT, "src/phenmeapsy/phenmeapsy.mmp"), arm_incs_first=True,
                        incs_first=["src/phenmeapsy/shim", _BT + "inc", _BT + "inc/Nmea", _BT + "inc/Utils", _BT + "inc/RequestHandler",
                                    _BT + "inc/Settings"],
                        extra=[_BT + "src/Nmea/BTGPSNmeaParser.cpp", _BT + "src/BTGPSFix.cpp", _BT + "src/Utils/BTGPSNmeaBuffer.cpp"]),
