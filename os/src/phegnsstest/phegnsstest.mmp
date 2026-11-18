@@ -1,0 +1,16 @@
+// Copyright The Phorepoc Authors
+// SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-or-later
+
+// phegnsstest.mmp -- OURS (GNSS rung 1): turns the EG25-G's GNSS on over its second AT port (COMM::11), reads the NMEA
+// port (COMM::9) for 60 s and logs sentence counts only (no coordinates), turns GNSS off again. "PH: gnss" lines.
+// Needs the modem powered (the licensee TSY holds the power unit: MODEM=1 A64_USBHOST=1) and the USB serial ports.
+TARGET			phegnsstest.exe
+TARGETTYPE		exe
+UID				0x1000007a 0xE7016C10
+CAPABILITY		All -TCB
+VENDORID		0
+
+OS_LAYER_SYSTEMINCLUDE
+SOURCEPATH		.
+SOURCE			phegnsstest.cpp
+LIBRARY			euser.lib c32.lib
