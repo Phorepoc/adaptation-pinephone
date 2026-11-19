@@ -27,7 +27,10 @@ COMPONENTS = {
     # PDD, the networks listed; SSM_TEST=wlantest
     "wlantest": dict(mmp=os.path.join(OS_ROOT, "src/wlantest/wlantest.mmp"), test=True),
     # RConnection::Start, DHCP, DNS + HTTP); SSM_TEST=wlanjoin; the network from C:\wlanjoin.txt "<ssid>|<psk>"
-    "wlanjoin": dict(mmp=os.path.join(OS_ROOT, "src/wlanjoin/wlanjoin.mmp"), test=True),
+    "wlanjoin": dict(mmp=os.path.join(OS_ROOT, "src/wlanjoin/wlanjoin.mmp"), test=True,
+                   # WLANJOIN_BT_ON=1 (a test variant's build_env): the boot test powers Bluetooth on first (CBTEngSettings -> the H5 HCTL,
+                   # the patch download, the LE router); a release leaves it off
+                   defs=(["WLANJOIN_BT_ON"] if os.environ.get("WLANJOIN_BT_ON") == "1" else [])),
     # without it); the release's stub for now, OURS (firmware + MAC) with the chip core
     # HAL) -- wlmserver refuses the stub's 00:E0:DE:AD:BE:EF. The 2010 stub: oss.FCL.sf.adapt.stubs/wlanhwinit_stub
     "wlanhwinit": dict(mmp=os.path.join(OS_ROOT, "src/wlanhwinit/group/wlanhwinit.mmp")),
