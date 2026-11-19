@@ -23,8 +23,12 @@ static void Rect(const char* aWhat, TInt aVariety, const TAknWindowLineLayout& a
 
 static void ProbeL()
 	{
-	// no CCoeEnv: ConstructL of a bare one panicked E32USER-CBase 66 (a cleanup-stack push with no TRAP in force) on the phone;
-	// the CDL layout tables are plain data and are tried without an environment
+	// A CCoeEnv is needed (without one the CDL engine panics "CdlEng 0" on the phone, boot 2795). Its ConstructL makes its OWN
+	// cleanup stack: a CTrapCleanup of ours made it panic E32USER-CBase 66 (a push with no TRAP level, boot 2793), so main installs none.
+	CCoeEnv* env = new (ELeave) CCoeEnv;
+	env->ConstructL();
+	const TSize scr(env->ScreenDevice()->SizeInPixels());
+	RDebug::Printf("PH: indprobe screen %d x %d", scr.iWidth, scr.iHeight);
 	const TRect pane(0, 0, 80, 19);
 	for (TInt v = 0; v < 2; ++v)
 		{
@@ -39,16 +43,13 @@ static void ProbeL()
 			RDebug::Printf("PH: indprobe uni_indicator_pane_g1(%d) left %d", v, e);
 		}
 	RDebug::Printf("PH: indprobe done");
+	delete env;
 	}
 
 TInt E32Main()
 	{
-	CTrapCleanup* cleanup = CTrapCleanup::New();
-	if (!cleanup)
-		return KErrNoMemory;
 	TRAPD(err, ProbeL());
 	if (err != KErrNone)
 		RDebug::Printf("PH: indprobe failed %d", err);
-	delete cleanup;
 	return err;
 	}
