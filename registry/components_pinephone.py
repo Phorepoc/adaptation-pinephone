@@ -28,6 +28,8 @@ COMPONENTS = {
     "wlantest": dict(mmp=os.path.join(OS_ROOT, "src/wlantest/wlantest.mmp"), test=True),
     # RConnection::Start, DHCP, DNS + HTTP); SSM_TEST=wlanjoin; the network from C:\wlanjoin.txt "<ssid>|<psk>"
     "wlanjoin": dict(mmp=os.path.join(OS_ROOT, "src/wlanjoin/wlanjoin.mmp"), test=True),
+    # the mobile data test: RConnection on the CommsDat "Ethernet - DHCP" IAP over the modem's USB Ethernet (USBHOST_NET=1), DNS + HTTP; SSM_TEST=phedatatest
+    "phedatatest": dict(mmp=os.path.join(OS_ROOT, "src/phedatatest/phedatatest.mmp"), test=True),
     # without it); the release's stub for now, OURS (firmware + MAC) with the chip core
     # HAL) -- wlmserver refuses the stub's 00:E0:DE:AD:BE:EF. The 2010 stub: oss.FCL.sf.adapt.stubs/wlanhwinit_stub
     "wlanhwinit": dict(mmp=os.path.join(OS_ROOT, "src/wlanhwinit/group/wlanhwinit.mmp")),
