@@ -36,6 +36,7 @@ _LIT(KWlanBearerName, "WLANBearer");
 _LIT(KLanServiceType, "LANService");
 _LIT(KLanBearerType, "LANBearer");
 _LIT(KConfigFile, "c:\\wlanjoin.txt");
+_LIT(KBtOnFile, "c:\\wlanjoin_bt.txt");	// a test device: this file present = power Bluetooth on at boot (PhoneLab fs_write; no rebuild)
 _LIT(KDefaultSsid, "Test");		// the user's open guest SSID on the ASUS (2026-10-10 evening, up for two hours)
 _LIT(KDefaultPsk, "");
 static const TInt KStepTimeout = 150 * 1000000;	// the engine's connect = scan + 5 join tries + DHCP; 60 s cut boot 257 short
@@ -88,6 +89,20 @@ static void ReadConfig(TDes& aSsid, TDes& aPsk)
 			}
 		}
 	fs.Close();
+	}
+
+// C:\wlanjoin_bt.txt exists: this boot test powers Bluetooth on (a build_env macro does not reach the component build)
+static TBool BtOnWanted()
+	{
+	RFs fs;
+	if (fs.Connect() != KErrNone)
+		return EFalse;
+	RFile f;
+	const TBool yes = f.Open(fs, KBtOnFile, EFileRead | EFileShareReadersOnly) == KErrNone;
+	if (yes)
+		f.Close();
+	fs.Close();
+	return yes;
 	}
 
 // "bssid=xx:xx:xx:xx:xx:xx" anywhere in C:\wlanjoin.txt -> ETrue + the six bytes
@@ -419,15 +434,20 @@ static void RunL()
 	CleanupStack::PushL(sched);
 	CActiveScheduler::Install(sched);
 	CBTEngSettings* bt = CBTEngSettings::NewLC();
-#ifdef WLANJOIN_BT_ON
-	TInt br = bt->SetPowerState(EBTPowerOn);
-	RDebug::Printf("[wlanjoin] Bluetooth SetPowerState(on) -> %d", br);
-	User::After(10000000);			// the patch download + the stack's init (~3 s)
-	TBTPowerStateValue power = EBTPowerOff;
-	br = bt->GetPowerState(power);
-	RDebug::Printf("[wlanjoin] Bluetooth GetPowerState -> %d, state %d (1 = on)", br, power);
-#else
-	RDebug::Printf("[wlanjoin] Bluetooth left off (WLANJOIN_BT_ON not set)");
+#ifndef WLANJOIN_BT_ON
+	if (BtOnWanted())
+#endif
+		{
+		TInt br = bt->SetPowerState(EBTPowerOn);
+		RDebug::Printf("[wlanjoin] Bluetooth SetPowerState(on) -> %d", br);
+		User::After(10000000);			// the patch download + the stack's init (~3 s)
+		TBTPowerStateValue power = EBTPowerOff;
+		br = bt->GetPowerState(power);
+		RDebug::Printf("[wlanjoin] Bluetooth GetPowerState -> %d, state %d (1 = on)", br, power);
+		}
+#ifndef WLANJOIN_BT_ON
+	else
+		RDebug::Printf("[wlanjoin] Bluetooth left off (no c:\\wlanjoin_bt.txt)");
 #endif
 	// the stored "ASUS" access point (WPA2, its key already in CommsDat; user 2026-10-14). "Phorepoc WLAN" (EnsureIapL, the
 	// expired open "Test" SSID) is no longer created: without ASUS the run stops here
