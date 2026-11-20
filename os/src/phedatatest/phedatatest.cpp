@@ -162,6 +162,20 @@ static void RunL()
 	CActiveScheduler* sched = new (ELeave) CActiveScheduler;
 	CActiveScheduler::Install(sched);
 	CleanupStack::PushL(sched);
+	{
+	RProcess cms;
+	TInt cr = cms.Create(_L("cmsetup.exe"), KNullDesC);
+	if (cr == KErrNone)
+		{
+		TRequestStatus cs;
+		cms.Logon(cs);
+		cms.Resume();
+		User::WaitForRequest(cs);
+		cr = cs.Int();
+		cms.Close();
+		}
+	RDebug::Printf("[phedata] cmsetup (the S60 connection tables, MPM's input): %d", cr);
+	}
 	TRAPD(de, DiagnoseL());
 	RDebug::Printf("[phedata] diagnostics: %d", de);
 	TUint32 iap = FindIapL();
@@ -177,6 +191,8 @@ static void RunL()
 	TCommDbConnPref pref;
 	pref.SetIapId(iap);
 	pref.SetDialogPreference(ECommDbDialogPrefDoNotPrompt);
+	pref.SetDirection(ECommDbConnectionDirectionOutgoing);
+	pref.SetBearerSet(ECommDbBearerLAN);
 	TRequestStatus st;
 	RDebug::Printf("[phedata] RConnection::Start(iap %u)...", iap);
 	conn.Start(pref, st);
@@ -186,7 +202,9 @@ static void RunL()
 	TRequestStatus pst, ts;
 	RTimer tm;
 	tm.CreateLocal();
-	tm.After(ts, KStepTimeout);
+	tm.After(ts, 1000000);
+	TInt ticks = 0;
+	User::ResetInactivityTime();
 	conn.ProgressNotification(pb, pst);
 	TBool stOut = ETrue, pstOut = ETrue, tsOut = ETrue;
 	TInt nProg = 0;
@@ -208,9 +226,15 @@ static void RunL()
 			stOut = EFalse;
 		else if (tsOut && ts != KRequestPending)
 			{
-			tsOut = EFalse;
-			RDebug::Printf("[phedata] RConnection::Start: TIMED OUT");
-			conn.Stop();
+			User::ResetInactivityTime();		// the display and the lock timers stay as they were: only the idle counter restarts
+			if (++ticks >= KStepTimeout / 1000000)
+				{
+				tsOut = EFalse;
+				RDebug::Printf("[phedata] RConnection::Start: TIMED OUT");
+				conn.Stop();
+				}
+			else
+				tm.After(ts, 1000000);
 			}
 		}
 	if (pstOut)
