@@ -14,6 +14,8 @@
 #include <commdbconnpref.h>
 #include <f32file.h>
 #include <e32property.h>
+#include <cmmanager.h>
+#include <cmgenconnsettings.h>
 
 _LIT(KIapName, "Ethernet - DHCP");
 static const TInt KStepTimeout = 90 * 1000000;
@@ -193,6 +195,16 @@ static void RunL()
 	pref.SetDialogPreference(ECommDbDialogPrefDoNotPrompt);
 	pref.SetDirection(ECommDbConnectionDirectionOutgoing);
 	pref.SetBearerSet(ECommDbBearerLAN);
+	// MPM asks "use mobile data abroad?" before a non-WLAN IAP when the stored cellular data usage is Confirm (the CommsDat
+	// DefConn default for a visitor network, cmmcache.cpp; the query is CMPMConfirmDlgRoaming). Unanswered (or hidden behind
+	// another note) it cancels the start. The test sets Automatic for the run and puts the user's values back after Start.
+	TCmGenConnSettings gen, saved;
+	RCmManager cm;
+	TRAPD(ce, { cm.OpenL(); cm.ReadGenConnSettingsL(saved); gen = saved;
+	            gen.iCellularDataUsageHome = ECmCellularDataUsageAutomatic; gen.iCellularDataUsageVisitor = ECmCellularDataUsageAutomatic;
+	            cm.WriteGenConnSettingsL(gen); });
+	RDebug::Printf("[phedata] cellular data usage home %d visitor %d -> automatic for the test: %d", saved.iCellularDataUsageHome,
+		saved.iCellularDataUsageVisitor, ce);
 	TRequestStatus st;
 	RDebug::Printf("[phedata] RConnection::Start(iap %u)...", iap);
 	conn.Start(pref, st);
@@ -251,6 +263,12 @@ static void RunL()
 	TNifProgress last;
 	conn.Progress(last);
 	RDebug::Printf("[phedata] RConnection::Start: %d (last progress: stage %d error %d)", st.Int(), last.iStage, last.iError);
+	if (ce == KErrNone)
+		{
+		TRAPD(re, cm.WriteGenConnSettingsL(saved));
+		RDebug::Printf("[phedata] cellular data usage restored: %d", re);
+		}
+	cm.Close();
 	TInt r = st.Int();
 	if (r != KErrNone)
 		User::Leave(r);
