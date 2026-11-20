@@ -9,6 +9,7 @@
 #include <e32debug.h>
 #include <es_sock.h>
 #include <in_sock.h>
+#include <in_iface.h>
 #include <commdb.h>
 #include <cdbcols.h>
 #include <commdbconnpref.h>
@@ -198,13 +199,25 @@ static void RunL()
 	// MPM asks "use mobile data abroad?" before a non-WLAN IAP when the stored cellular data usage is Confirm (the CommsDat
 	// DefConn default for a visitor network, cmmcache.cpp; the query is CMPMConfirmDlgRoaming). Unanswered (or hidden behind
 	// another note) it cancels the start. The test sets Automatic for the run and puts the user's values back after Start.
+	// Only with C:\phedata_auto.txt: without it the stored values stand (the stock visitor Confirm), so MPM's roaming query is
+	// raised and its place on screen can be tested.
+	TBool autoUse = EFalse;
+	{
+	RFs afs;
+	TEntry ae;
+	if (afs.Connect() == KErrNone)
+		{
+		autoUse = afs.Entry(_L("c:\\phedata_auto.txt"), ae) == KErrNone;
+		afs.Close();
+		}
+	}
 	TCmGenConnSettings gen, saved;
 	RCmManager cm;
 	TRAPD(ce, { cm.OpenL(); cm.ReadGenConnSettingsL(saved); gen = saved;
-	            gen.iCellularDataUsageHome = ECmCellularDataUsageAutomatic; gen.iCellularDataUsageVisitor = ECmCellularDataUsageAutomatic;
-	            cm.WriteGenConnSettingsL(gen); });
-	RDebug::Printf("[phedata] cellular data usage home %d visitor %d -> automatic for the test: %d", saved.iCellularDataUsageHome,
-		saved.iCellularDataUsageVisitor, ce);
+	            if (autoUse) { gen.iCellularDataUsageHome = ECmCellularDataUsageAutomatic; gen.iCellularDataUsageVisitor = ECmCellularDataUsageAutomatic;
+	                           cm.WriteGenConnSettingsL(gen); } });
+	RDebug::Printf("[phedata] cellular data usage home %d visitor %d; automatic for the test: %d (%d)", saved.iCellularDataUsageHome,
+		saved.iCellularDataUsageVisitor, autoUse, ce);
 	TRequestStatus st;
 	RDebug::Printf("[phedata] RConnection::Start(iap %u)...", iap);
 	conn.Start(pref, st);
@@ -272,6 +285,29 @@ static void RunL()
 	TInt r = st.Int();
 	if (r != KErrNone)
 		User::Leave(r);
+	// every interface the stack has, with its address and name servers (DNS -5120 at once = no server on the interface):
+	// the DHCP lease's option 6 shows up as iNameSer1/2 of the Ethernet interface
+	{
+	RSocket is;
+	if (is.Open(ss, KAfInet, KSockDatagram, KProtocolInetUdp, conn) == KErrNone)
+		{
+		if (is.SetOpt(KSoInetEnumInterfaces, KSolInetIfCtrl) == KErrNone)
+			{
+			TPckgBuf<TSoInetInterfaceInfo> info;
+			for (TInt n = 0; n < 12 && is.GetOpt(KSoInetNextInterface, KSolInetIfCtrl, info) == KErrNone; ++n)
+				{
+				TBuf<48> a, d1, d2;
+				info().iAddress.Output(a);
+				info().iNameSer1.Output(d1);
+				info().iNameSer2.Output(d2);
+				TBuf8<48> n8, a8, d18, d28;
+				n8.Copy(info().iName.Left(48)); a8.Copy(a); d18.Copy(d1); d28.Copy(d2);
+				RDebug::Printf("[phedata] if %S state %d addr %S dns1 %S dns2 %S", &n8, (TInt)info().iState, &a8, &d18, &d28);
+				}
+			}
+		is.Close();
+		}
+	}
 	TRAPD(fe, FetchL(ss, conn));
 	RDebug::Printf("[phedata] fetch: %d", fe);
 	User::After(KHoldSeconds * 1000000);
