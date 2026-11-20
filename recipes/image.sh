@@ -92,6 +92,10 @@ if [ "${MODEM:-0}" = 1 ] && [ -z "${MODEM_EG25:-}" ]; then
   [ -n "${MODEM_EG25:-}" ] || { echo "MODEM=1: no modem-eg25 among PHOREPOC_ADAPTATIONS (board.conf REPOS)" >&2; exit 1; }
   echo "modem back end: $MODEM_EG25"
 fi
+# the modem's AT channel is its USB serial port, which exists only once the USB host (A64_USBHOST=1) has attached it: MODEM=1 without
+# it gave an image whose licensee TSY never got the IMSI (boot 2834: no [usbh] line, AT port unit 10 never there). A modem build
+# therefore carries the USB host unless the caller says A64_USBHOST=0.
+if [ "${MODEM:-0}" = 1 ]; then export A64_USBHOST="${A64_USBHOST:-1}"; echo "USB host for the modem: A64_USBHOST=$A64_USBHOST"; fi
 echo "[4/5] kernel + ROM (build_ekern_rom.sh BOARD=a64 PHOREPOC=1 BOOT=ssm)"
 mkdir -p "$OUT"
 ( cd "$V" && PACKAGE=tools/phorepoc-arm/make_pinephone_image.sh BOARD=a64 SMP=1 MMODEL=flexible SECONDARY=efile PHOREPOC=1 BOOT=ssm ROM_ARCH=arm NGA="${NGA:-1}" \

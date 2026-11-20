@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       build_env:
-        description: "KEY=VALUE pairs for the image build (e.g. MODEM=1)"
+        description: "KEY=VALUE pairs for the image build, on top of what release.yml builds (nothing): e.g. MODEM=1 (implies A64_USBHOST=1, the modem's USB serial port)"
         required: true
         type: string
 
