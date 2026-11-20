@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   image:
-    uses: Phorepoc/pdk/.github/workflows/board-image.yml@main
+    uses: Phorepoc/pdk/.github/workflows/board-image.yml@test/rom-syms-wf
     with:
       build_env: ${{ inputs.build_env }}
     permissions:
