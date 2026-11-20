@@ -12,6 +12,8 @@
 #include <commdb.h>
 #include <cdbcols.h>
 #include <commdbconnpref.h>
+#include <f32file.h>
+#include <e32property.h>
 
 _LIT(KIapName, "Ethernet - DHCP");
 static const TInt KStepTimeout = 90 * 1000000;
@@ -47,6 +49,61 @@ static TUint32 FindIapL()
 		v->ReadUintL(TPtrC(COMMDB_ID), id);
 	CleanupStack::PopAndDestroy(2);
 	return id;
+	}
+
+// what the Ethernet NIF will do first (ethint -> EtherPkt, CardCtl.cpp LoadDeviceDriversL): the LDD/PDD file and device names it
+// reads from the LANBearer table, and the ini file it needs; printed so a failure before the driver is opened names its cause
+static void ReadBearerColumn(CCommsDbTableView& aV, const TDesC& aCol, const char* aLabel)
+	{
+	TBuf<KCommsDbSvrMaxFieldLength> v;
+	TRAPD(e, aV.ReadTextL(aCol, v));
+	TBuf8<KCommsDbSvrMaxFieldLength> v8;
+	v8.Copy(v);
+	if (e == KErrNone)
+		RDebug::Printf("[phedata] LANBearer %s = \"%S\"", aLabel, &v8);
+	else
+		RDebug::Printf("[phedata] LANBearer %s: read error %d", aLabel, e);
+	}
+
+static void DiagnoseL()
+	{
+	TInt autolock = -99, saver = -99;
+	const TInt ae = RProperty::Get(TUid::Uid(0x101F8767), 0x501, autolock);	// KCoreAppUIsAutolockStatus (1 = off)
+	const TInt se = RProperty::Get(TUid::Uid(0x101F8771), 0x3, saver);		// KScreenSaverOn
+	RDebug::Printf("[phedata] lock state: autolock %d (err %d), screensaver on %d (err %d); the connection dialogs cancel while locked", autolock, ae, saver, se);
+	CCommsDatabase* db = CCommsDatabase::NewL();
+	CleanupStack::PushL(db);
+	CCommsDbTableView* v = db->OpenTableLC(TPtrC(LAN_BEARER));
+	TInt n = 0;
+	for (TInt e = v->GotoFirstRecord(); e == KErrNone && n < 4; e = v->GotoNextRecord(), ++n)
+		{
+		RDebug::Printf("[phedata] LANBearer record %d", n);
+		ReadBearerColumn(*v, TPtrC(COMMDB_NAME), "Name");
+		ReadBearerColumn(*v, TPtrC(LAN_BEARER_LDD_FILENAME), "LDDFilename");
+		ReadBearerColumn(*v, TPtrC(LAN_BEARER_LDD_NAME), "LDDName");
+		ReadBearerColumn(*v, TPtrC(LAN_BEARER_PDD_FILENAME), "PDDFilename");
+		ReadBearerColumn(*v, TPtrC(LAN_BEARER_PDD_NAME), "PDDName");
+		ReadBearerColumn(*v, TPtrC(LAN_BEARER_PACKET_DRIVER_NAME), "PacketDriverName");
+		}
+	if (n == 0)
+		RDebug::Printf("[phedata] LANBearer table: no record");
+	CleanupStack::PopAndDestroy(2);		// view, db
+	RFs fs;
+	if (fs.Connect() == KErrNone)
+		{
+		TEntry en;
+		const TInt ec = fs.Entry(_L("c:\\private\\101f7989\\esock\\ether802.ini"), en);
+		const TInt ez = fs.Entry(_L("z:\\private\\101f7989\\esock\\ether802.ini"), en);
+		RDebug::Printf("[phedata] ether802.ini: c: %d, z: %d (0 = present)", ec, ez);
+		static const TText* const KFiles[] = { _S("z:\\sys\\bin\\ethint.nif"), _S("z:\\sys\\bin\\etherpkt.drv"), _S("z:\\sys\\bin\\enet.ldd"), _S("z:\\sys\\bin\\ethernet.pdd") };
+		for (TInt i = 0; i < 4; ++i)
+			{
+			TBuf<64> f(TPtrC(KFiles[i]));
+			TBuf8<64> f8; f8.Copy(f);
+			RDebug::Printf("[phedata] file %S: %d (0 = present; enet.ldd and ethernet.pdd are expected absent: the kernel has them built in)", &f8, fs.Entry(f, en));
+			}
+		fs.Close();
+		}
 	}
 
 static void FetchL(RSocketServ& aSs, RConnection& aConn)
@@ -105,6 +162,8 @@ static void RunL()
 	CActiveScheduler* sched = new (ELeave) CActiveScheduler;
 	CActiveScheduler::Install(sched);
 	CleanupStack::PushL(sched);
+	TRAPD(de, DiagnoseL());
+	RDebug::Printf("[phedata] diagnostics: %d", de);
 	TUint32 iap = FindIapL();
 	RDebug::Printf("[phedata] IAP \"Ethernet - DHCP\" = %u", iap);
 	if (!iap)
@@ -121,12 +180,56 @@ static void RunL()
 	TRequestStatus st;
 	RDebug::Printf("[phedata] RConnection::Start(iap %u)...", iap);
 	conn.Start(pref, st);
-	TInt r = Await(st, "RConnection::Start");
-	if (r != KErrNone)
+	// every progress notification (stage + error) until Start completes: a KErrCancel at the end is only a verdict, the
+	// last stage and its error name the step that failed (KConfigDaemonLoading 3500.., KLinkLayerOpen 7000, ...)
+	TNifProgressBuf pb;
+	TRequestStatus pst, ts;
+	RTimer tm;
+	tm.CreateLocal();
+	tm.After(ts, KStepTimeout);
+	conn.ProgressNotification(pb, pst);
+	TBool stOut = ETrue, pstOut = ETrue, tsOut = ETrue;
+	TInt nProg = 0;
+	while (stOut)
 		{
-		if (r == KErrTimedOut) conn.Stop();
-		User::Leave(r);
+		User::WaitForAnyRequest();
+		if (pstOut && pst != KRequestPending)
+			{
+			pstOut = EFalse;
+			if (nProg++ < 40)
+				RDebug::Printf("[phedata] progress: stage %d error %d (status %d)", pb().iStage, pb().iError, pst.Int());
+			if (stOut && pst == KErrNone)
+				{
+				conn.ProgressNotification(pb, pst);
+				pstOut = ETrue;
+				}
+			}
+		if (stOut && st != KRequestPending)
+			stOut = EFalse;
+		else if (tsOut && ts != KRequestPending)
+			{
+			tsOut = EFalse;
+			RDebug::Printf("[phedata] RConnection::Start: TIMED OUT");
+			conn.Stop();
+			}
 		}
+	if (pstOut)
+		{
+		conn.CancelProgressNotification();
+		User::WaitForRequest(pst);
+		}
+	if (tsOut)
+		{
+		tm.Cancel();
+		User::WaitForRequest(ts);
+		}
+	tm.Close();
+	TNifProgress last;
+	conn.Progress(last);
+	RDebug::Printf("[phedata] RConnection::Start: %d (last progress: stage %d error %d)", st.Int(), last.iStage, last.iError);
+	TInt r = st.Int();
+	if (r != KErrNone)
+		User::Leave(r);
 	TRAPD(fe, FetchL(ss, conn));
 	RDebug::Printf("[phedata] fetch: %d", fe);
 	User::After(KHoldSeconds * 1000000);
