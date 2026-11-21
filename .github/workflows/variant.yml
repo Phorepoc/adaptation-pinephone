@@ -10,12 +10,30 @@ on:
   workflow_dispatch:
     inputs:
       build_env:
-        description: "KEY=VALUE pairs for the image build (e.g. MODEM=1)"
-        required: true
+        description: "KEY=VALUE pairs for the image build (none = the plain image)"
+        required: false
+        default: ""
         type: string
+      layer_prefix:
+        description: "A test run of the build itself: a prefix for the layers' tags, so it reads and writes its own, never the boards'"
+        required: false
+        default: ""
+        type: string
+      board_layer:
+        description: "Start from the board's own layer (false = the core layer alone: the check that both make the same image)"
+        required: false
+        default: true
+        type: boolean
+      manifest:
+        description: "Upload image-manifest.txt (tools/ci/image_manifest.py) to compare two builds"
+        required: false
+        default: false
+        type: boolean
 
+# one run per branch at a time: variants of different branches build in parallel (each starts from the board's layer and
+# only compiles what its branch changed), a second run of one branch waits for the first
 concurrency:
-  group: variant
+  group: variant-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -23,6 +41,9 @@ jobs:
     uses: Phorepoc/pdk/.github/workflows/board-image.yml@test/rom-syms-wf
     with:
       build_env: ${{ inputs.build_env }}
+      layer_prefix: ${{ inputs.layer_prefix }}
+      board_layer: ${{ inputs.board_layer }}
+      manifest: ${{ inputs.manifest }}
     permissions:
       contents: write
       packages: write
