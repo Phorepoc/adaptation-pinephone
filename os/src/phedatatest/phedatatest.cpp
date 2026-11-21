@@ -74,6 +74,9 @@ static void DiagnoseL()
 	const TInt ae = RProperty::Get(TUid::Uid(0x101F8767), 0x501, autolock);	// KCoreAppUIsAutolockStatus (1 = off)
 	const TInt se = RProperty::Get(TUid::Uid(0x101F8771), 0x3, saver);		// KScreenSaverOn
 	RDebug::Printf("[phedata] lock state: autolock %d (err %d), screensaver on %d (err %d); the connection dialogs cancel while locked", autolock, ae, saver, se);
+	TInt emergency = -99;
+	const TInt ee = RProperty::Get(TUid::Uid(0x102029A0), 0, emergency);	// KPSUidCtsyEmergencyCallInfo / KCTSYEmergencyCallInfo
+	RDebug::Printf("[phedata] emergency call info %d (err %d); non-zero also cancels the connection dialogs", emergency, ee);
 	CCommsDatabase* db = CCommsDatabase::NewL();
 	CleanupStack::PushL(db);
 	CCommsDbTableView* v = db->OpenTableLC(TPtrC(LAN_BEARER));
