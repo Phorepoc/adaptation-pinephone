@@ -82,6 +82,11 @@ export PATH="$V/bin:$PATH" KVIEW="$V"
 [ -f "$A/a53/shim-ram-noprobe.bin" ] || [ -n "$(command -v aarch64-linux-gnu-gcc)" ] \
   || { echo "no entry shim in $A/a53: run the SoC's recipes/host/shim.sh on the host first" >&2; exit 1; }
 mkdir -p "$A/a53"; rm -rf "$V/.a53-build"; ln -s "$A/a53" "$V/.a53-build"
+# the phone image talks to its modem (2026-11-21): the EG25-G powered and its AT port (MODEM=1, A64_USBHOST=1: pheltsy, calls,
+# SMS) and its USB Ethernet function for mobile data (USBHOST_NET=1: the CDC ECM driver behind the "Ethernet - DHCP" IAP;
+# pheltsy sets the modem's APN and ECM mode). A build can still turn each off (MODEM=0 ...)
+: "${MODEM:=1}" "${A64_USBHOST:=1}" "${USBHOST_NET:=1}"
+export MODEM A64_USBHOST USBHOST_NET
 # MODEM=1: the kernel link builds the modem power code from the modem-eg25 checkout among the board's repositories
 if [ "${MODEM:-0}" = 1 ] && [ -z "${MODEM_EG25:-}" ]; then
   # (in phe's container the repositories are mounted as /adapt/<n>; PHOREPOC_ADAPTATION_NAMES names them in order)
