@@ -9,5 +9,5 @@ it" -- the licence file is staged next to the firmware in the ROM (`Z:\resource\
 Rules (the same as `../../bt/fw/`): ship as is, never disassemble or modify, **never into `deliverables/`**.
 
 Consumers: the kernel's chip core reads it straight out of the XIP ROM (`src/phorepoc-arm/a64/wlan/a64wlan.cpp`) and
-hands it to the vendored rtw88 (`request_firmware` in `shim_rt.cpp`); the OURS `wlanhwinit` will load it from user
+hands it to the vendored rtw88 (`request_firmware` in `shim_rt.cpp`); Phorepoc's `wlanhwinit` will load it from user
 side through the WHA front later.

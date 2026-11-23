@@ -87,8 +87,8 @@ At build time `os/` is laid over core's `os/`, so the paths line up with core's.
 
 ## Licence
 
-Code we wrote, and Symbian files we've changed, are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
-Symbian files we use unchanged stay EPL-1.0. The licence texts are in `LICENSES/`.
+Phorepoc-authored files and modified Symbian files are EPL-2.0, with GPL-2.0-or-later as a Secondary License, and
+unmodified Symbian files remain EPL-1.0. The licence texts are in `LICENSES/`.
 
 The Realtek firmware in `os/board/bt/fw/` and `wlan/fw/` comes from linux-firmware, and can be redistributed under the
 licence next to it.
