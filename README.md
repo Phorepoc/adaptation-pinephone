@@ -33,7 +33,7 @@ and its apps to a phone with a modern chip, drawn by the phone's GPU.
 
 1. Download `phorepoc-pinephone-sdcard.img.xz` from the
    [latest release](https://github.com/Phorepoc/adaptation-pinephone/releases/latest).
-2. Write it to a microSD card with [balenaEtcher](https://etcher.balena.io).
+2. Flash it to a microSD card with [balenaEtcher](https://etcher.balena.io).
 3. Put the card in and switch the phone on.
 
 Phorepoc OS runs from the card. Take the card out and the phone boots its own system again.

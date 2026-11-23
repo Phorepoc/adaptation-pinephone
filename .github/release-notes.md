@@ -2,7 +2,7 @@ These are development images: a card that always has a safe fallback, and an ima
 
 ## A new card
 
-1. Write `phorepoc-pinephone-sdcard.img.xz` to a microSD card with [balenaEtcher](https://etcher.balena.io).
+1. Flash `phorepoc-pinephone-sdcard.img.xz` to a microSD card with [balenaEtcher](https://etcher.balena.io).
 2. Put the card in and switch the phone on.
 
 The card boots Phorepoc. It also holds a small fallback system (the golden image): if a pushed image fails to boot, the
